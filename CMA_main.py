@@ -42,7 +42,7 @@ class Config:
     # Calibration factors for the different scintillator regions
     factor = np.ones((N_FLUKA,))
     # Initialize ErrorAnalysis with error data and parameters
-    error_files = ['mean1_VAC.txt', 'mean2_VAC.txt', 'mean3_FVAC.txt', 'mean4_VAC.txt']
+    error_files = ['mean1_VAC.txt', 'mean2_VAC.txt', 'mean3_VAC.txt', 'mean4_VAC.txt']
     E_error = np.array([3.31926620e-02, 3.99210913e-02, 4.80134292e-02, 5.64290847e-02,
                         6.63198120e-02, 7.97633907e-02, 9.37440879e-02, 1.12746796e-01,
                         1.35601511e-01, 1.59369353e-01, 1.91674849e-01, 2.25271064e-01,
@@ -445,10 +445,16 @@ def main():
     
     # Instantiate the ErrorAnalysis class
     error_analysis = ErrorAnalysis(Config.E_error, Config.error_files, Config.ddv)
-
+    
+    
+    '''User Input required'''
+    '''
+    Run the Calc_errors.py to determine the error in the unfolding of your RM you can put 1 for test
+    
     # Calculate errors using the interpolator
     y_errors = error_analysis.get_errors(E_guess.reshape(-1, 1), signal)
-
+    y_errors = 1
+    '''
     # Plot the error analysis results
     error_analysis.plot_error_results(E_guess, signal, y_errors, rel_error)
 
