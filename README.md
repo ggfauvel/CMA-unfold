@@ -109,12 +109,10 @@ For further information, questions, or collaboration, please contact:
 Email: [gaetan.fauvel@eli-beams.eu](mailto:gaetan.fauvel@eli-beams.eu)
 
 
----
-
-Thank you for using the CMA-ES Spectrum Unfolding project! We hope it serves your research and analytical needs effectively.
 
 
-7. **License**: This script uses the CMA algortihm from nikohansen available at https://github.com/CMA-ES/pycma under the licensing
+## License
+This script uses the CMA algortihm from nikohansen available at https://github.com/CMA-ES/pycma under the licensing
 The BSD 3-Clause License
 Copyright (c) 2014 Inria
 Author: Nikolaus Hansen, 2008-
@@ -146,4 +144,7 @@ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
-This `README.md` file is designed to be comprehensive, giving users a clear understanding of what the project does, how to set it up, and how to use it. Adjust sections as needed to fit the specifics of your project and data.
+
+---
+
+Thank you for using the CMA-ES Spectrum Unfolding project! We hope it serves your research and analytical needs effectively.
