@@ -8,8 +8,10 @@
 2. [Requirements](#requirements)
 3. [Installation and Usage](#installation-and-usage)
 4. [Expert Usage](#expert-usage)
-5. [Contact Information](#contact-information)
-6. [License](#license)
+5. [Results of Calibrated Spectrometer](#results-of-calibrated-spectrometer)
+6. [How to Cite](#how-to-cite)
+7. [Contact Information](#contact-information)
+8. [License](#license)
 
 ## Overview
 
@@ -60,6 +62,44 @@ This will generate plots comparing experimental and simulated data and display t
 For more advanced users, you can calculate the errors associated with the unfolding method using the provided script:
 
 - **Error Calculation Script:** Use `Calc_errors.py` to evaluate the accuracy and reliability of the unfolding results. This script analyzes the uncertainty in the unfolded spectrum, providing a detailed error profile.
+## Results of Calibrated Spectrometer
+
+This section presents the calibration results of a stacking scintillator calorimeter using a Co-60 radioactive source. Calibration with Co-60, a commonly used radioactive source, provides two distinct gamma-ray peaks at energies of 1.17 MeV and 1.33 MeV. These calibration points are critical for accurately interpreting the energy response of the spectrometer.
+
+### Calibration Lines
+
+The calibration of the spectrometer is visualized by plotting the detected signal against the known gamma-ray energies from the Co-60 source:
+
+- **Co-60 Energy Lines**: Two prominent lines at 1.17 MeV and 1.33 MeV are used to calibrate the spectrometer's energy scale. These lines are indicative of the spectrometer's ability to resolve distinct energy peaks accurately.
+
+Below are some images showing the calibration process and the results:
+
+1. **Raw Data Visualization**: A plot showing the raw output from the scintillator array when exposed to the Co-60 source.
+
+![Raw Data Visualization](images/raw_data.png)
+
+2. **Calibrated Spectrum**: A comparison of the theoretical data and the unfolding.
+
+![Calibrated Spectrum](images/calibrated_spectrum.png)
+
+These images provide a clear view of the spectrometer's calibration, demonstrating its capability to accurately detect and resolve gamma-ray peaks from radioactive sources like Co-60.
+
+## How to Cite
+
+If you use this code in your research or publication, please cite it as follows:
+
+
+Alternatively, you can use the following BibTeX entry for LaTeX users:
+
+```bibtex
+@misc{fauvel2024cmaes,
+  author = {Gaëtan Fauvel},
+  title = {},
+  howpublished = {},
+  note = {}
+}
+```
+
 
 ## Contact Information
 
@@ -67,6 +107,7 @@ For further information, questions, or collaboration, please contact:
 
 **Fauvel Gaëtan**  
 Email: [gaetan.fauvel@eli-beams.eu](mailto:gaetan.fauvel@eli-beams.eu)
+
 
 ---
 
