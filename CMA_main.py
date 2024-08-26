@@ -37,7 +37,7 @@ class Config:
 
     N_sim = 2000  # Number of simulation runs
     N_FLUKA = 17  # Number of FLUKA simulations
-    N_data = 449 - 35 - 15 - 26  # Number of data points after filtering
+    N_data = 449 - 35 - 15 - 26  # Number of data points for the Response Matrix. It represents the number of energy bins used inside the RM. It can be different than te one used for the unfolding.
 
     # Calibration factors for the different scintillator regions
     factor = np.ones((N_FLUKA,))
@@ -58,7 +58,7 @@ class Config:
                         1.43984795e+02, 1.73171713e+02, 2.08275063e+02, 2.44780916e+02,
                         2.87685409e+02, 3.54077391e+02, 4.16139055e+02, 5.00493910e+02,
                         6.01948197e+02, 6.91320378e+02, 8.31456781e+02, 1.00000000e+03])
-    ddv = np.logspace(-10, 0, 1000)  # Array representing variation in parameter (e.g., detector distance)
+    ddv = np.logspace(-10, 0, 1000)  # Array representing variation in parameter (e.g., number of particles normalized to the max)
 
 class DataProcessor:
     """Handles data processing and image reading."""
@@ -178,7 +178,7 @@ class Optimizer:
         Simulated_FLUKA = np.sum(10**Simulated.reshape(Config.N_guess, 1) * self.FLUKA_tot[self.nearest_indices, :] * 
                                  self.FLUKA_fact[self.nearest_indices, :], axis=0)
         
-        # Calculate the error term (difference between experimental and simulated data)
+        # Calculate the error term (difference between experimental and simulated data). The optimization is done in log-scale for better convergence.
         error_term = np.sum((self.Exp_FLUKA - Simulated_FLUKA) ** 2 / self.Exp_FLUKA**2)
         
         # Calculate the smoothness term (to enforce smooth solution)
@@ -373,7 +373,7 @@ class ErrorAnalysis:
         
         y_err_lower = signal - signal / (1 + relative_error) #Error for the errorbar plot
         y_err_upper = signal * relative_error #Error for the errorbar plot
-        y_err_lower3 = signal / (1 + 3*relative_error) # Error for the gray area plot 
+        y_err_lower3 = signal / (1 + 3*relative_error) # Error for the gray area plot. It represents the error at 3 sigma where the true value of the bin has a 86% probability of being in this area.
         
         
         # Plot the unfolded spectrum with error bars
@@ -413,18 +413,18 @@ def main():
     - Spectrum_tot : Spectrum of used for the RM calculation, can be used to be multiplied to spectrum not implemented yet. Shape is ((N_data,N_spectrum))
     - FLUKA_tot : Response Matrix calculated from the Monte-Carlo code and calculate energy depostion for mono-energetic photons (or quasi-mono-energetic). Must be normalized to the max along N_FLUKA axis, ie each deposited energy pattern is normalized to the max. Shape is ((N_data,N_FLUKA))
     - FLUKA_fact : Normalizing factor of FLUKA_tot. Can be calculated by np.amax(FLUKA_tot,axis = 1).
-    
+    - E : Energies of the bins used for the Response Matrix
     
     Spectrum_tot, FLUKA_tot, FLUKA_fact, E = data_processor.import_RM()
     '''
 
-    # Generate energy guess range for the optimization process
+    # Generate energy guess range for the optimization process. Can be different from E but need to stay in same boundaries. It will take the closest indices but they need to be sufficiently spaced !
     E_guess = np.logspace(*Config.E_guess_range, Config.N_guess)
 
     # Initialize Optimizer with necessary data for CMA-ES optimization
     optimizer = Optimizer(E, E_guess, FLUKA_tot, FLUKA_fact, Exp_FLUKA, Config.smooth_factor)
 
-    # Run the optimization to find the best-fit parameters
+    # Run the optimization to find the best-fit parameters. The optimization is done in log-scale for better convergence.
     sim = optimizer.run_CMA()
 
     # Calculate the simulated FLUKA spectrum based on optimization results
