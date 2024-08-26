@@ -80,7 +80,7 @@ Below are some images showing the calibration process and the results:
 
 2. **Calibrated Spectrum**: A comparison of the theoretical data and the unfolding.
 
-<img src="images/spectrum.png" alt="Calibrated Spectrum" width="300"/>
+<img src="images/spectrum.png" alt="Calibrated Spectrum" width="500"/>
 
 These images provide a clear view of the spectrometer's calibration, demonstrating its capability to accurately detect and resolve gamma-ray peaks from radioactive sources like Co-60.
 
