@@ -76,11 +76,11 @@ Below are some images showing the calibration process and the results:
 
 1. **Raw Data Visualization**: A plot showing the raw output from the scintillator array when exposed to the Co-60 source.
 
-![Raw Data Visualization](images/raw_data.png)
+![Raw Data Visualization](images/raw_data.tiff)
 
 2. **Calibrated Spectrum**: A comparison of the theoretical data and the unfolding.
 
-![Calibrated Spectrum](images/calibrated_spectrum.png)
+![Calibrated Spectrum](images/spectrum.png)
 
 These images provide a clear view of the spectrometer's calibration, demonstrating its capability to accurately detect and resolve gamma-ray peaks from radioactive sources like Co-60.
 
