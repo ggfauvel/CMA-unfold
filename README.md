@@ -100,15 +100,12 @@ Alternatively, you can use the following BibTeX entry for LaTeX users:
 }
 ```
 
-
 ## Contact Information
 
 For further information, questions, or collaboration, please contact:
 
 **Fauvel Gaëtan**  
 Email: [gaetan.fauvel@eli-beams.eu](mailto:gaetan.fauvel@eli-beams.eu)
-
-
 
 
 ## License
@@ -118,32 +115,6 @@ Copyright (c) 2014 Inria
 Author: Nikolaus Hansen, 2008-
 Author: Petr Baudis, 2014
 Author: Youhei Akimoto, 2016-
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
-
-1. Redistributions of source code must retain the above copyright and
-   authors notice, this list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright
-   and authors notice, this list of conditions and the following
-   disclaimer in the documentation and/or other materials provided with
-   the distribution.
-
-3. Neither the name of the copyright holder nor the names of its
-   contributors nor the authors names may be used to endorse or promote
-   products derived from this software without specific prior written
-   permission.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
-OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-
 
 ---
 
