@@ -94,7 +94,7 @@ Below are some images showing the calibration process and the results:
 
 It is possible to achieve a better precision on 'mono-energetic' spectrum but cannot be extrapolated to continuous distribution. It is up to the user to define the needs of the detector.
 
-<img src="images/Precise_Spectro_A.png" alt="Calibrated Spectrum" width="500"/>
+<img src="images/Precise_Spectro_A.png" alt="Calibrated Spectrum" width="300"/>
 
 These images provide a clear view of the spectrometer's calibration, demonstrating its capability to accurately detect and resolve gamma-ray peaks from radioactive sources like Co-60.
 
