@@ -25,7 +25,8 @@ name_INP = 'Test'# name of the input FLUKA
 folder_path_exp = '/HOME/FLUKA/CMA-unfold' #Main folder to work with, must be current working directory
 folder_path_response = folder_path_exp + "/Response_matrix" #Folder where the Response Matrix (RM) will be saved
 folder_PYTHON_script = folder_path_exp+'/Python_script'#Folder where are located the python script
-cmd_FLUKA = "$FLUPRO/bin/rfluka -M"+ str(Number_cycle_FLUKA)+" -e $FLUPRO/Synchrotron "+folder_path_exp + '/'+name_INP+'.inp'#Command given to terminal for FLUKA launch
+exe_path = '$FLUPRO/Synchrotron'
+cmd_FLUKA = "$FLUPRO/bin/rfluka -M"+ str(Number_cycle_FLUKA)+" -e  exe_path "+folder_path_exp + '/'+name_INP+'.inp'#Command given to terminal for FLUKA launch
 
 
 ''' Cluster variables'''

@@ -1,0 +1,139 @@
+TITLE
+
+#define energy -1
+SOURCE           0.0       0.0       0.0       0.0       0.0       0.0
+SOURCE           0.0       0.0       0.0       0.0       0.0       0.0 &
+SOURCE           0.0       0.0       0.0       0.0       0.0       0.0 &&
+* Set the defaults for precision simulations
+DEFAULTS                                                              PRECISIO
+* Define the beam characteristics
+BEAM         $energy                0.01       3.0       3.0          PHOTON
+* Define the beam position
+BEAMPOS                              -3.
+*MGNFIELD                                               0.245
+GEOBEGIN                                                              COMBNAME
+    0    0          
+* Black body
+SPH blkbody    0.0 0.0 0.0 100000.0
+* Void sphere
+SPH void       0.0 0.0 0.0 10000.0
+RPP air        -100. 100. -100. 100. -500. 50.
+RPP teflon1    -1.5 1.5 -1.5 1.5 0.0 0.2
+RPP plast1     -1.5 1.5 -1.5 1.5 0.2 2.2
+RPP teflon2    -1.5 1.5 -1.5 1.5 2.2 2.4
+RPP plast2     -1.5 1.5 -1.5 1.5 2.4 4.4
+RPP teflon3    -1.5 1.5 -1.5 1.5 4.4 4.6
+RPP l1         -1.5 1.5 -1.5 1.5 4.6 5.1
+RPP teflon4    -1.5 1.5 -1.5 1.5 5.1 5.3
+RPP l2         -1.5 1.5 -1.5 1.5 5.3 5.8
+RPP teflon5    -1.5 1.5 -1.5 1.5 5.8 6.
+RPP l3         -1.5 1.5 -1.5 1.5 6. 6.5
+RPP teflon6    -1.5 1.5 -1.5 1.5 6.5 6.7
+RPP l4         -1.5 1.5 -1.5 1.5 6.7 7.2
+RPP teflon7    -1.5 1.5 -1.5 1.5 7.2 7.4
+RPP l5         -1.5 1.5 -1.5 1.5 7.4 7.9
+RPP teflon8    -1.5 1.5 -1.5 1.5 7.9 8.1
+RPP l6         -1.5 1.5 -1.5 1.5 8.1 8.6
+RPP teflon9    -1.5 1.5 -1.5 1.5 8.6 8.8
+RPP l7         -1.5 1.5 -1.5 1.5 8.8 9.3
+RPP teflon10   -1.5 1.5 -1.5 1.5 9.3 9.5
+RPP l8         -1.5 1.5 -1.5 1.5 9.5 10.0
+RPP teflon11   -1.5 1.5 -1.5 1.5 10. 10.2
+RPP l9         -1.5 1.5 -1.5 1.5 10.2 10.7
+RPP teflon12   -1.5 1.5 -1.5 1.5 10.7 10.9
+RPP l10        -1.5 1.5 -1.5 1.5 10.9 11.4
+RPP teflon13   -1.5 1.5 -1.5 1.5 11.4 11.6
+RPP bgo1       -1.5 1.5 -1.5 1.5 11.6 12.1
+RPP teflon14   -1.5 1.5 -1.5 1.5 12.1 12.3
+RPP bgo2       -1.5 1.5 -1.5 1.5 12.3 12.8
+RPP teflon15   -1.5 1.5 -1.5 1.5 12.8 13.
+RPP bgo3       -1.5 1.5 -1.5 1.5 13. 13.5
+RPP teflon16   -1.5 1.5 -1.5 1.5 13.5 13.7
+RPP bgo4       -1.5 1.5 -1.5 1.5 13.7 14.2
+RPP teflon17   -1.5 1.5 -1.5 1.5 14.2 14.4
+RPP teflon19   1.5 1.6 -1.5 1.5 0 15.1
+RPP teflon21   -1.6 0.0 -1.5 1.5 0 15.1
+RPP teflon20   -1.5 1.5 1.5 1.6 0 15.1
+RPP bgo5       -1.5 1.5 -1.5 1.5 14.4 14.9
+RPP teflon18   -1.5 1.5 -1.5 1.5 14.9 15.1
+END
+* Black hole
+BLKBODY      5 +blkbody -void
+* Void around
+VOID         5 +void -air
+LYSO1        5 +plast1
+LYSO2        5 +plast2
+TEFLON1      5 +teflon1
+TEFLON2      5 +teflon2
+TEFLON3      5 +teflon3
+TEFLON4      5 +teflon4
+TEFLON5      5 +teflon5
+TEFLON6      5 +teflon6
+TEFLON7      5 +teflon7
+TEFLON8      5 +teflon8
+TEFLON9      5 +teflon9
+TEFLON10     5 +teflon10
+TEFLON11     5 +teflon11
+TEFLON12     5 +teflon12
+TEFLON13     5 +teflon13
+TEFLON14     5 +teflon14
+TEFLON15     5 +teflon15
+TEFLON16     5 +teflon16
+TEFLON17     5 +teflon17
+TEFLON18     5 +teflon18
+TEFLON19     5 +teflon19
+TEFLON20     5 +teflon20
+L1           5 +l1
+L2           5 +l2
+L3           5 +l3
+L4           5 +l4
+L5           5 +l5
+L6           5 +l6
+L7           5 +l7
+L8           5 +l8
+L9           5 +l9
+L10          5 +l10
+BGO1         5 +bgo1
+BGO2         5 +bgo2
+BGO3         5 +bgo3
+BGO4         5 +bgo4
+BGO5         5 +bgo5
+AIR          5 +air
+               -l6 -l5 -l4 -l3 -l2 -l1
+               -l7-l8-l9-l10
+               -bgo1-bgo2-bgo3-bgo4-bgo5
+               -teflon1 -teflon2 -teflon3 -teflon4
+               -teflon5 -teflon6 -teflon7 -teflon8 -teflon9 -teflon10 -teflon11 -teflon12 -teflon13 -teflon14
+               -teflon15 -teflon16 -teflon17 -teflon18 -teflon19 -teflon20
+END
+GEOEND
+MATERIAL           9           0.0015803                              FLUORINE
+MATERIAL         71.               9.841                              LUTETIUM
+MATERIAL         39.               4.469                              YTTRIUM
+MATERIAL         32.               5.323                              GERMANIU
+MATERIAL         83.               9.747                              BISMUTH
+MATERIAL                             2.2                              TEFLON
+COMPOUND   -0.759817  FLUORINE -0.240183    CARBON                    TEFLON
+* Lutetium Yttrium Orto-silicate (LYSO)
+MATERIAL                             7.4                              LYSO
+COMPOUND         1.8  LUTETIUM       0.2   YTTRIUM       1.0   SILICONLYSO
+COMPOUND         5.0    OXYGEN                                        LYSO
+* Bismuth germanium oxide Bi4_Ge3_O12
+MATERIAL                            7.13                              BGO
+COMPOUND   -0.154126    OXYGEN  -0.17482  GERMANIU -0.671054   BISMUTHBGO
+* ..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+ASSIGNMA    BLCKHOLE   BLKBODY
+ASSIGNMA      VACUUM      VOID
+ASSIGNMA        LYSO        L1       L10
+ASSIGNMA    PLASCINT     LYSO1     LYSO2
+ASSIGNMA         BGO      BGO1      BGO5
+ASSIGNMA      TEFLON   TEFLON1  TEFLON20
+ASSIGNMA      VACUUM       AIR
+USRBIN            10    ENERGY        21       1.5       1.5        20map0
+USRBIN          -1.5      -1.5         0       100       100       800 &
+SCORE         ENERGY  EM-ENRGY      DOSE   DOSE-EQ
+* Set the random number seed
+RANDOMIZ         1.0
+* Set the number of primary histories to be simulated in the run
+START       1000000.
+STOP

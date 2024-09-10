@@ -60,6 +60,14 @@ This will generate plots comparing experimental and simulated data and display t
 ## Expert Usage
 
 For more advanced users, you can calculate the errors associated with the unfolding method using the provided script:
+- **Response Matrix (RM) calculation:** This script uses FLUKA. You have to fill the RM_variables.py script. It uses the Test.inp. You must launch the script while being in the folder of the .inp, here for example 
+```bash
+cd RM
+```
+```bash
+python3 Python_script/RM.py
+```
+Using flair, you must compile a custom executable using the source_final.f in the RM folder.
 
 - **Error Calculation Script:** Use `Calc_errors.py` to evaluate the accuracy and reliability of the unfolding results. This script analyzes the uncertainty in the unfolded spectrum, providing a detailed error profile.
 ## Results of Calibrated Spectrometer
@@ -83,6 +91,12 @@ Below are some images showing the calibration process and the results:
 <img src="images/spectrum.png" alt="Calibrated Spectrum" width="500"/>
 
 These images provide a clear view of the spectrometer's calibration, demonstrating its capability to accurately detect and resolve gamma-ray peaks from radioactive sources like Co-60.
+
+### Tips to make the dream work
+1. The more detectors you have, the more precise you need to be with your .inp input as a small deviation from reality accumulates quickly. EVERY element close to the detector must be included.
+2. When using the algorithm for peaks solution, you can use a smoothing factor close to zero it finds peaks very accurately but then struggles for continuous distributions.
+3. The experimental setup must be included inside the FLUKA simulation if no/low shielding used or a long detector is used without pinhole.
+
 
 ## How to Cite
 
@@ -118,4 +132,4 @@ Author: Youhei Akimoto, 2016-
 
 ---
 
-Thank you for using the CMA-ES Spectrum Unfolding project! We hope it serves your research and analytical needs effectively.
+Thank you for using the CMA-ES Spectrum Unfolding project! We hope it serves your research and analytical needs.
