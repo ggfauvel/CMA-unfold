@@ -90,7 +90,14 @@ Below are some images showing the calibration process and the results:
 
 <img src="images/spectrum.png" alt="Calibrated Spectrum" width="500"/>
 
+3. **Calibrated Spectrum**: More precise spectrum
+
+It is possible to achieve a better precision on 'mono-energetic' spectrum but cannot be extrapolated to continuous distribution. It is up to the user to define the needs of the detector.
+
+<img src="images/Precise_Spectro_A.png" alt="Calibrated Spectrum" width="500"/>
+
 These images provide a clear view of the spectrometer's calibration, demonstrating its capability to accurately detect and resolve gamma-ray peaks from radioactive sources like Co-60.
+
 
 ### Tips to make the dream work
 1. The more detectors you have, the more precise you need to be with your .inp input as a small deviation from reality accumulates quickly. EVERY element close to the detector must be included.
