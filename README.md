@@ -11,7 +11,8 @@
 5. [Results of Calibrated Spectrometer](#results-of-calibrated-spectrometer)
 6. [How to Cite](#how-to-cite)
 7. [Contact Information](#contact-information)
-8. [License](#license)
+8. [Acknowledgments](#acknowledgments)
+9. [License](#license)
 
 ## Overview
 
@@ -128,6 +129,11 @@ For further information, questions, or collaboration, please contact:
 **Fauvel Gaëtan**  
 Email: [gaetan.fauvel@eli-beams.eu](mailto:gaetan.fauvel@eli-beams.eu)
 
+## Acknowledgments
+
+We wish to acknowledge the support of the National Sci-
+ence Foundation (NSF Grant No. PHY-2206777) and the Czech Science Foundation
+(GA ČR) for funding on project number No. 22-42890L in the frame of the National Science Foundation–Czech Science Foundation partnership.
 
 ## License
 This script uses the CMA algortihm from nikohansen available at https://github.com/CMA-ES/pycma under the licensing
