@@ -109,6 +109,7 @@ These images provide a clear view of the spectrometer's calibration, demonstrati
 ## How to Cite
 
 If you use this code in your research or publication, please cite it as follows:
+
 G. Fauvel, K. Tangtartharakul, A. Arefiev, J. De Chant, S. Hakimi, O. Klimo, M. Manuel, A. McIlvenny, K. Nakamura, L. Obst-Huebl, P. Rubovic, S. Weber, F. P. Condamine; Compact in-vacuum gamma-ray spectrometer for high-repetition rate PW-class laser–matter interaction. Rev. Sci. Instrum. 1 February 2025; 96 (2): 023102. https://doi.org/10.1063/5.0206348
 
 Alternatively, you can use the following BibTeX entry for LaTeX users:
