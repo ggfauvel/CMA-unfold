@@ -159,8 +159,7 @@ Email: [fauvel.gaetan@outlook.com](mailto:fauvel.gaetan@outlook.com)
 
 ## Acknowledgments
 
-We wish to acknowledge the support of the National Sci-
-ence Foundation (NSF Grant No. PHY-2206777) and the Czech Science Foundation
+We wish to acknowledge the support of the National Science Foundation (NSF Grant No. PHY-2206777) and the Czech Science Foundation
 (GA ČR) for funding on project number No. 22-42890L in the frame of the National Science Foundation–Czech Science Foundation partnership.
 
 ## Third-Party Licenses
