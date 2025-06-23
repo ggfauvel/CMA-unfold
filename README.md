@@ -109,16 +109,24 @@ These images provide a clear view of the spectrometer's calibration, demonstrati
 ## How to Cite
 
 If you use this code in your research or publication, please cite it as follows:
-
+G. Fauvel, K. Tangtartharakul, A. Arefiev, J. De Chant, S. Hakimi, O. Klimo, M. Manuel, A. McIlvenny, K. Nakamura, L. Obst-Huebl, P. Rubovic, S. Weber, F. P. Condamine; Compact in-vacuum gamma-ray spectrometer for high-repetition rate PW-class laser–matter interaction. Rev. Sci. Instrum. 1 February 2025; 96 (2): 023102. https://doi.org/10.1063/5.0206348
 
 Alternatively, you can use the following BibTeX entry for LaTeX users:
 
 ```bibtex
-@misc{fauvel2024cmaes,
-  author = {Gaëtan Fauvel},
-  title = {},
-  howpublished = {},
-  note = {}
+@article{10.1063/5.0206348,
+    author = {Fauvel, G. and Tangtartharakul, K. and Arefiev, A. and De Chant, J. and Hakimi, S. and Klimo, O. and Manuel, M. and McIlvenny, A. and Nakamura, K. and Obst-Huebl, L. and Rubovic, P. and Weber, S. and Condamine, F. P.},
+    title = {Compact in-vacuum gamma-ray spectrometer for high-repetition rate PW-class laser–matter interaction},
+    journal = {Review of Scientific Instruments},
+    volume = {96},
+    number = {2},
+    pages = {023102},
+    year = {2025},
+    month = {02},
+    issn = {0034-6748},
+    doi = {10.1063/5.0206348},
+    url = {https://doi.org/10.1063/5.0206348},
+    eprint = {https://pubs.aip.org/aip/rsi/article-pdf/doi/10.1063/5.0206348/20383725/023102\_1\_5.0206348.pdf},
 }
 ```
 
