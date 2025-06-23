@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 import glob
+import os
 import re
 import matplotlib.pyplot as plt
 import cma
@@ -18,7 +19,7 @@ from scipy.interpolate import RegularGridInterpolator
 from scipy.stats import norm
 class Config:
     """Configuration parameters for the analysis."""
-    N_guess = 10  # Number of energy guesses for the optimization. Be carefull highly non-linear ! Do not go above 200 points on local machine !
+    N_guess = 25  # Number of energy guesses for the optimization. Be carefull highly non-linear ! Do not go above 200 points on local machine !
     
     E_guess_range = (np.log10(5e-2), np.log10(100))  # Energy range for guesses (log scale)
     E_guess = np.logspace(*E_guess_range, N_guess)
@@ -27,43 +28,43 @@ class Config:
     lower_bound = -10  # Lower bound for optimization variables
     upper_bound = 10  # Upper bound for optimization variables
     
-    folder_path = ""  # Path to response matrix files
-    image_path = ""  # Path to image file for analysis
+    folder_path = "./RM/Response_matrix/"  # Path to response matrix files
+    image_path = "./images/raw_data.tiff"  # Path to image file for analysis
 
     # Region of Interest (ROI) for analyzing the image data
-    ROI = np.array([[524, 649, 933, 1121], [709, 828, 933, 1104], [866, 901, 926, 1114], [940, 964, 915, 1118], 
+    ROI = np.array([[524+60, 649, 933, 1121], [709+30, 828, 933, 1104], [866, 901, 926, 1114], [940, 964, 915, 1118], 
                     [1006, 1034, 915, 1121], [1080, 1111, 912, 1111], [1157, 1185, 915, 1125], [1227, 1255, 908, 1125], 
                     [1283, 1321, 905, 1121], [1356, 1387, 915, 1118], [1422, 1454, 915, 1118], [1489, 1524, 919, 1118], 
-                    [1562, 1594, 908, 1111], [1632, 1664, 915, 1104], [1702, 1730, 919, 1107], [1772, 1800, 915, 1118], 
+                    [1562+5, 1594, 908, 1111], [1632, 1664, 915, 1104], [1702, 1730, 919, 1107], [1772, 1800, 915, 1118], 
                     [1828, 1860, 919, 1111]])  # ROI coordinates for scintillators
 
     N_sim = 2000  # Number of bin inside the spectrum used for the FLUKA simulation
     N_FLUKA = 17  # Number of slices/detectors inside the stack
-    N_data = 449 - 35 - 15 - 26  # Number of data points inside the response matrix, ie. total number of FLUKA simulations performed
+    N_data = 2000  # Number of data points inside the response matrix, ie. total number of FLUKA simulations performed
 
     # Calibration factors for the different scintillator regions
     '''USER INPUT NEEDED'''
     ''' Please provide the calibration factor calculated for your detector. These factors will be multiplied to the FLUKA output. If the RM is already good put 1.
-    factor = np.ones((N_FLUKA,))
     '''
+    factor = np.array([ 107.01256591,  114.32747207,  250.14450456,  318.13876634,
+            297.9812333 ,  269.50250641,  244.36715103,  235.70913968,
+            243.62062148,  265.55290113,  224.2890357 ,  269.87905736,
+           1826.3594274 , 1736.53814584, 2016.53732247, 1443.53111315,
+           1892.13289656])
+    
     # Initialize ErrorAnalysis with error data and parameters. 
-    error_files = ['mean1_VAC.txt', 'mean2_VAC.txt', 'mean3_VAC.txt', 'mean4_VAC.txt']
-    E_error = np.array([3.31926620e-02, 3.99210913e-02, 4.80134292e-02, 5.64290847e-02,
-                        6.63198120e-02, 7.97633907e-02, 9.37440879e-02, 1.12746796e-01,
-                        1.35601511e-01, 1.59369353e-01, 1.91674849e-01, 2.25271064e-01,
-                        2.70935387e-01, 3.18424160e-01, 3.82971391e-01, 4.50097513e-01,
-                        5.41336030e-01, 6.51069356e-01, 7.65186915e-01, 8.99306672e-01,
-                        1.10684849e+00, 1.30085370e+00, 1.56454759e+00, 1.88169442e+00,
-                        2.21151240e+00, 2.59913992e+00, 3.12600724e+00, 3.75967497e+00,
-                        4.41865996e+00, 5.31435916e+00, 6.24584471e+00, 7.51192949e+00,
-                        8.82859884e+00, 1.06182294e+01, 1.27706330e+01, 1.50090328e+01,
-                        1.80514888e+01, 2.12155017e+01, 2.55160607e+01, 2.99884423e+01,
-                        3.60673495e+01, 4.33785019e+01, 5.09817606e+01, 6.13161884e+01,
-                        7.20635132e+01, 8.66713880e+01, 1.04240401e+02, 1.22511358e+02,
-                        1.43984795e+02, 1.73171713e+02, 2.08275063e+02, 2.44780916e+02,
-                        2.87685409e+02, 3.54077391e+02, 4.16139055e+02, 5.00493910e+02,
-                        6.01948197e+02, 6.91320378e+02, 8.31456781e+02, 1.00000000e+03])
-    ddv = np.logspace(-10, 0, 1000)  # Array representing variation in parameter (e.g., detector distance)
+    error_files = ['./Error/mean1_VAC.txt', './Error/mean2_VAC.txt', './Error/mean3_VAC.txt', './Error/mean4_VAC.txt']
+    E_error = np.array([5.00000000e-02, 6.41142715e-02, 8.34786374e-02, 1.07662418e-01,
+           1.38766479e-01, 1.78856616e-01, 2.25271064e-01, 2.97129582e-01,
+           3.82971391e-01, 4.82354943e-01, 6.36219849e-01, 8.20026062e-01,
+           1.05693455e+00, 1.36228676e+00, 1.75585633e+00, 2.26312957e+00,
+           2.85042632e+00, 3.75967497e+00, 4.84585864e+00, 6.24584471e+00,
+           8.05029181e+00, 1.03760502e+01, 1.33737286e+01, 1.72374471e+01,
+           2.22174078e+01, 2.86360972e+01, 3.60673495e+01, 4.75723614e+01,
+           6.13161884e+01, 7.90306568e+01, 1.01862899e+02, 1.31291459e+02,
+           1.69222035e+02, 2.18110892e+02, 2.81123917e+02, 3.62341632e+02,
+           4.56371628e+02, 6.01948197e+02, 7.75853206e+02, 9.77192128e+02])
+    ddv = np.logspace(-10,0,1000)  # Array representing variation in parameter (e.g., detector distance)
 
 class DataProcessor:
     """Handles data processing and image reading."""
@@ -91,6 +92,7 @@ class DataProcessor:
                     print('Wrong end of E')  # Error message if no suitable index is found
                     return None
             if val > np.amax(array) or val < np.amin(array):  # Check if value is out of bounds
+                print(array)    
                 print('E bin not in RM')  # Error message if value is out of range
                 raise ValueError
             used_indices.add(index)
@@ -99,7 +101,7 @@ class DataProcessor:
         return np.array(indices)
 
     @staticmethod
-    def read_image(norm=True):
+    def read_image(norm=True,plot = False):
         """Read and process image data."""
         im = Image.open(Config.image_path)  # Open the image
         im = np.array(im)  # Convert image to numpy array
@@ -109,8 +111,10 @@ class DataProcessor:
         for y_min, y_max, x_min, x_max in zip(Config.ROI[:, 0], Config.ROI[:, 1], Config.ROI[:, 2], Config.ROI[:, 3]):
             ROI_image = im[x_min:x_max, y_min:y_max]  # Extract the ROI from the image
             value_scint = np.sum(ROI_image)  # Sum the pixel values in the ROI
-            
-            if norm:
+            if plot == True:
+                plt.imshow(ROI_image)
+                plt.show()
+            if norm == True:
                 value_scint = value_scint / ROI_image.size  # Normalize by the size of the ROI
             
             exp_spectrum_image.append(value_scint)
@@ -126,43 +130,60 @@ class DataProcessor:
     @classmethod
     def import_RM(cls):
         """Import Response Matrix data."""
-        Spectrum_tot, FLUKA_tot, FLUKA_fact = cls.initialize_array(Config.N_data, Config.N_sim)  # Initialize arrays
-        name_list = [0] * Config.N_data  # Initialize name list
-        sorted_filenames_gauss = sorted(glob.glob(Config.folder_path), key=cls.sort_numerically)  # Sort files by numerical value
-        start_name = 100 - 12 - 2  # Starting index for filename reduction
-
-        for compteur, file in enumerate(sorted_filenames_gauss):
-            file_red = file[start_name:]  # Reduce filename for easier handling
-            if file_red.find("Spectrum") < 0:
-                continue  # Skip if 'Spectrum' not found in reduced filename
-
-            ind = file[start_name:].find(".") - file_red.find(".")  # Calculate index for file naming
-            name = file_red[:file[start_name+4:].find(".")-5]  # Extract name from filename
-            
+        # Initialize arrays
+        Spectrum_tot, FLUKA_tot, FLUKA_fact = cls.initialize_array(Config.N_data, Config.N_sim)
+        name_list = np.zeros(Config.N_data, dtype=float)
+    
+        # Grab all files in the folder
+        all_files = glob.glob(os.path.join(Config.folder_path, '*'))
+        # Keep only the Spectrum files and sort them
+        spectrum_files = sorted(
+            [f for f in all_files if os.path.basename(f).endswith('_Spectrum.txt')],
+            key=cls.sort_numerically
+        )
+    
+        for idx, spec_path in enumerate(spectrum_files):
+            base = os.path.basename(spec_path)
+            # Extract the 'name' as everything before "_Spectrum"
+            m = re.match(r'(.+?)_Spectrum', base)
+            if not m:
+                print(f"Couldn't parse name from '{base}' — skipping.")
+                continue
+            name = m.group(1)
+    
+            # Build the corresponding filenames
+            energy_path = os.path.join(os.path.dirname(spec_path), f"{name}_Energy.txt")
+            fluka_path  = os.path.join(os.path.dirname(spec_path), f"{name}_FLUKA.txt")
+    
+            # Read energy
             try:
-                Energy = pd.read_csv(file[:ind+start_name]+name+"_Energy.txt", header=None)  # Read energy data
-            except:
-                print('File name error ', file, compteur)  # Error message if file reading fails
+                Energy = pd.read_csv(energy_path, header=None)
+            except FileNotFoundError:
+                print(f"Energy file missing for '{name}' — skipping.")
                 continue
+    
+            # Read and normalize FLUKA
+            FLUKA = pd.read_csv(fluka_path, header=None).iloc[:, 0].to_numpy()
+            FLUKA *= Config.factor
+            peak = FLUKA.max()
+            if peak == 0:
+                print(f"Empty FLUKA data for '{name}' — skipping.")
+                continue
+            FLUKA /= peak
+    
+            # Store into arrays
             
-            FLUKA = pd.read_csv(file[:ind+start_name]+name+"_FLUKA.txt", header=None)  # Read FLUKA data
-            FLUKA = np.array(FLUKA.values[:, 0])  # Convert FLUKA data to numpy array
-            FLUKA *= Config.factor  # Apply calibration factors to FLUKA data
-            FLUKA_fact_sum = np.amax(FLUKA)  # Find max value for normalization
-            if FLUKA_fact_sum != 0:
-                FLUKA /= np.amax(FLUKA)  # Normalize FLUKA data
-            else:
-                print('Empty file ', file, compteur)  # Error message for empty file
-                continue
-            FLUKA_tot[compteur, :] = FLUKA  # Store FLUKA data
-            FLUKA_fact[compteur] = FLUKA_fact_sum  # Store normalization factor
-            name_list[compteur] = float(name)  # Store name for sorting
-
-        args = np.argsort(name_list)  # Sort indices by name
-        E = np.array(name_list, dtype=float)[args]  # Sorted energy values
-        Spectrum_tot = Spectrum_tot[args, :]  # Sort Spectrum array
-        FLUKA_tot = FLUKA_tot[args, :]  # Sort FLUKA array
-        FLUKA_fact = FLUKA_fact[args, :]  # Sort FLUKA factors
+            FLUKA_tot[idx, :]    = FLUKA
+            FLUKA_fact[idx]      = peak
+            name_list[idx]       = float(name)
+    
+        # Sort everything by ascending 'name'
+        order = np.argsort(name_list)
+        E            = name_list[order]
+        Spectrum_tot = Spectrum_tot[order, :]
+        FLUKA_tot    = FLUKA_tot[order, :]
+        FLUKA_fact   = FLUKA_fact[order]
+    
         return Spectrum_tot, FLUKA_tot, FLUKA_fact, E
 
 class Optimizer:
@@ -285,20 +306,27 @@ class ErrorAnalysis:
 
         # Smooth the error matrix
         self.error_matrix = self.smooth_2d_array(self.error_matrix, self.window_size)
-
+    
+    
     def create_error_matrix(self):
         """Fill the error matrix based on the error levels and ddv values."""
         # Fill the matrix using different error levels depending on the ddv value
+        # Example function to fill the error matrix
+        # Create a 2D matrix of error values
+        error_matrix = np.zeros((len(self.ddv), len(self.E_error)))
+        #print(error_matrix.shape)
         for i, xi in enumerate(self.E_error):
             for j, dv in enumerate(self.ddv):
                 if dv > 0.1:
-                    self.error_matrix[j, i] = self.error1[i]
+                    error_matrix[j, i] = self.error1[i] if not np.isnan(self.error1[i]) else 1
                 elif dv > 0.01:
-                    self.error_matrix[j, i] = self.error2[i]
-                elif dv > 0.001:
-                    self.error_matrix[j, i] = self.error3[i]
-                else:
-                    self.error_matrix[j, i] = self.error4[i]
+                    error_matrix[j, i] = self.error2[i] if not np.isnan(self.error2[i]) else 1
+                elif dv>0.001:
+                    error_matrix[j, i] = self.error3[i] if not np.isnan(self.error3[i]) else 1
+                else :
+                    error_matrix[j, i] = self.error4[i] if not np.isnan(self.error4[i]) else 1
+        error_matrix = self.smooth_2d_array(error_matrix,200)
+        return error_matrix
 
     @staticmethod
     def smooth_2d_array(data, window_size, axis=0):
@@ -364,17 +392,21 @@ class ErrorAnalysis:
         # Plot settings and initialization
         plt.rcParams.update({'font.size': 24})
         plt.figure(figsize=(10, 8))
-
         
         
-        # Calculate logarithmic differences for x-axis scaling
-        log_diff = np.diff(np.log10(E_guess))
-        min_log_diff = np.array([np.amin(log_diff)])
-        diff_log10 = np.concatenate((min_log_diff, log_diff))
-        signal /= diff_log10
         
+        deltaE = np.diff(E_guess)   
+        
+        # total counts over all (used) bins
+        N_tot_exp = np.sum(signal)
+        scale_exp = N_tot_exp / np.sum(signal[:-1] * deltaE)
+        
+        # true dN/dE in particles/MeV
+        signal =signal[:-1] * scale_exp
+        dN = signal*deltaE
+        N_error = np.sqrt(dN)/dN
         # Calculate relative errors for error bars with std the error over the stack unfolding data and y_errors the error on the numerical unfolding method
-        relative_error = y_errors + std
+        relative_error = y_errors[:-1] + std  + N_error
         
         y_err_lower = signal - signal / (1 + relative_error) #Error for the errorbar plot
         y_err_upper = signal * relative_error #Error for the errorbar plot
@@ -382,13 +414,13 @@ class ErrorAnalysis:
         
         
         # Plot the unfolded spectrum with error bars
-        plt.errorbar(E_guess, signal, yerr=[y_err_lower, y_err_upper], color='k', ecolor='b', capsize=5, label='Unfolded')
+        plt.errorbar(E_guess[:-1], signal, yerr=[y_err_lower, y_err_upper], color='k', ecolor='b', capsize=5, label='Unfolded')
         
         # Fill between error bounds
-        plt.fill_between(E_guess, 3 * y_err_upper + signal, y_err_lower3, color='gray', alpha=0.2, label=r'3 $\sigma$ error')
+        plt.fill_between(E_guess[:-1], 3 * y_err_upper + signal, y_err_lower3, color='gray', alpha=0.2, label=r'3 $\sigma$ error')
 
         # Configure plot axes and labels
-        plt.ylabel(r'$dN/dE_{log10}$')
+        plt.ylabel(r'$dN/dE (MeV^{-1})$')
         plt.xlabel('E (MeV)')
         plt.yscale('log')
         plt.xscale('log')
@@ -405,11 +437,12 @@ def main():
     '''
     Provide here the experimental data you have. Either image or custom function for passive stack
     # Read experimental data from the image
+    '''
     Exp_FLUKA = data_processor.read_image()
     Exp_max = np.amax(Exp_FLUKA)  # Find maximum value in experimental data for normalization
     Exp_FLUKA = Exp_FLUKA.reshape(1, -1)  # Reshape experimental data array
     Exp_FLUKA /= Exp_max  # Normalize experimental data
-    '''
+    
     # Import response matrix from files
     '''User Input required'''
     '''
@@ -418,10 +451,10 @@ def main():
     - Spectrum_tot : Spectrum of used for the RM calculation, can be used to be multiplied to spectrum not implemented yet. Shape is ((N_data,N_spectrum))
     - FLUKA_tot : Response Matrix calculated from the Monte-Carlo code and calculate energy depostion for mono-energetic photons (or quasi-mono-energetic). Must be normalized to the max along N_FLUKA axis, ie each deposited energy pattern is normalized to the max. Shape is ((N_data,N_FLUKA))
     - FLUKA_fact : Normalizing factor of FLUKA_tot. Can be calculated by np.amax(FLUKA_tot,axis = 1).
-    
+    '''
     
     Spectrum_tot, FLUKA_tot, FLUKA_fact, E = data_processor.import_RM()
-    '''
+    
 
     
     
@@ -455,15 +488,15 @@ def main():
     '''User Input required'''
     '''
     Run the Calc_errors.py to determine the error in the unfolding of your RM you can put 1 for test
-    
-    # Calculate errors using the interpolator
-    y_errors = error_analysis.get_errors(E_guess.reshape(-1, 1), signal)
-    y_errors = 1
-    
     '''
+    # Calculate errors using the interpolator
+    y_errors = error_analysis.get_errors(Config.E_guess.reshape(-1, 1), signal)
+    #y_errors = 1
+    
+    
    
     # Plot the error analysis results
-    error_analysis.plot_error_results(E_guess, signal, y_errors, rel_error)
+    error_analysis.plot_error_results(Config.E_guess, signal, y_errors, rel_error)
 
 # Run the main function when the script is executed
 if __name__ == "__main__":
