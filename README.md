@@ -89,13 +89,13 @@ Below are some images showing the calibration process and the results:
 
 2. **Calibrated Spectrum**: A comparison of the theoretical data and the unfolding.
 
-<img src="images/spectrum.png" alt="Calibrated Spectrum" width="500"/>
+<img src="cma_unfold/images/spectrum.png" alt="Calibrated Spectrum" width="500"/>
 
 3. **Calibrated Spectrum**: More precise spectrum
 
 It is possible to achieve a better precision on 'mono-energetic' spectrum but cannot be extrapolated to continuous distribution. It is up to the user to define the needs of the detector.
 
-<img src="images/Precise_Spectro_A.png" alt="Calibrated Spectrum" width="300"/>
+<img src="cma_unfold/images/Precise_Spectro_A.png" alt="Calibrated Spectrum" width="300"/>
 
 These images provide a clear view of the spectrometer's calibration, demonstrating its capability to accurately detect and resolve gamma-ray peaks from radioactive sources like Co-60.
 
@@ -108,9 +108,11 @@ These images provide a clear view of the spectrometer's calibration, demonstrati
 
 ## How to Cite
 
-If you use this code in your research or publication, please cite it as follows:
+If you use this code in your research or publication, please cite the following two publications :
 
 G. Fauvel, K. Tangtartharakul, A. Arefiev, J. De Chant, S. Hakimi, O. Klimo, M. Manuel, A. McIlvenny, K. Nakamura, L. Obst-Huebl, P. Rubovic, S. Weber, F. P. Condamine; Compact in-vacuum gamma-ray spectrometer for high-repetition rate PW-class laser–matter interaction. Rev. Sci. Instrum. 1 February 2025; 96 (2): 023102. https://doi.org/10.1063/5.0206348
+
+Fauvel, G. (2025). ggfauvel/CMA-unfold: Initial Public Release (v1.0.3). Zenodo. https://doi.org/10.5281/zenodo.15721385
 
 Alternatively, you can use the following BibTeX entry for LaTeX users:
 
@@ -130,7 +132,24 @@ Alternatively, you can use the following BibTeX entry for LaTeX users:
     eprint = {https://pubs.aip.org/aip/rsi/article-pdf/doi/10.1063/5.0206348/20383725/023102\_1\_5.0206348.pdf},
 }
 ```
-
+```bibtex
+@software{fauvel_2025_15721385,
+  author       = {Fauvel, Gaetan},
+  title        = {ggfauvel/CMA-unfold: Initial Public Release},
+  month        = jun,
+  year         = 2025,
+  publisher    = {Zenodo},
+  version      = {v1.0.3},
+  doi          = {10.5281/zenodo.15721385},
+  url          = {https://doi.org/10.5281/zenodo.15721385},
+  swhid        = {swh:1:dir:fe2fb1c248b60a85329cbefb6fa4e2a242c20808
+                   ;origin=https://doi.org/10.5281/zenodo.15720992;vi
+                   sit=swh:1:snp:c034164c19b3be3bebd3177e03c7c001393f
+                   62e8;anchor=swh:1:rel:ce320e9fab03c8e3d695f1d4a1ed
+                   e7b1f6c82a01;path=ggfauvel-CMA-unfold-9e36077
+                  },
+}
+```
 ## Contact Information
 
 For further information, questions, or collaboration, please contact:
