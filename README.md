@@ -85,7 +85,7 @@ Below are some images showing the calibration process and the results:
 
 1. **Raw Data Visualization**: A plot showing the raw output from the scintillator array when exposed to the Co-60 source.
 
-<img src="images/raw_data.tiff" alt="Raw Data Visualization" width="300"/>
+<img src="cma_unfold/images/raw_data.tiff" alt="Raw Data Visualization" width="300"/>
 
 2. **Calibrated Spectrum**: A comparison of the theoretical data and the unfolding.
 
