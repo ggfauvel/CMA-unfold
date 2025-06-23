@@ -144,8 +144,9 @@ We wish to acknowledge the support of the National Sci-
 ence Foundation (NSF Grant No. PHY-2206777) and the Czech Science Foundation
 (GA ČR) for funding on project number No. 22-42890L in the frame of the National Science Foundation–Czech Science Foundation partnership.
 
-## License
-This script uses the CMA algortihm from nikohansen available at https://github.com/CMA-ES/pycma under the licensing
+## Third-Party Licenses
+
+This project uses the `py-cma` library, which is licensed under the BSD 3-Clause License.  
 
 The BSD 3-Clause License
 Copyright (c) 2014 Inria
