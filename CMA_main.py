@@ -19,7 +19,7 @@ from scipy.interpolate import RegularGridInterpolator
 from scipy.stats import norm
 class Config:
     """Configuration parameters for the analysis."""
-    N_guess = 25  # Number of energy guesses for the optimization. Be carefull highly non-linear ! Do not go above 200 points on local machine !
+    N_guess = 150  # Number of energy guesses for the optimization. Be carefull highly non-linear ! Do not go above 200 points on local machine !
     
     E_guess_range = (np.log10(5e-2), np.log10(100))  # Energy range for guesses (log scale)
     E_guess = np.logspace(*E_guess_range, N_guess)
