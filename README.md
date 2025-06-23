@@ -1,6 +1,6 @@
 # CMA-ES Spectrum Unfolding
 
-**Welcome to the CMA-ES Spectrum Unfolding project!** This project provides a robust framework for unfolding particle spectra using the Covariance Matrix Adaptation Evolution Strategy (CMA-ES). By leveraging data from Monte-Carlo simulations and experimental measurements, this script can effectively reconstruct the underlying particle energy distribution.
+**Welcome to the CMA-ES Spectrum Unfolding project!** This project provides a robust framework for unfolding particle spectra using the Covariance Matrix Adaptation Evolution Strategy (CMA-ES) created by Hansen et al. By leveraging data from Monte-Carlo simulations and experimental measurements, this script can effectively reconstruct the underlying particle energy distribution.
 
 ## Table of Contents
 
@@ -110,15 +110,24 @@ These images provide a clear view of the spectrometer's calibration, demonstrati
 
 If you use this code in your research or publication, please cite it as follows:
 
+G. Fauvel, K. Tangtartharakul, A. Arefiev, J. De Chant, S. Hakimi, O. Klimo, M. Manuel, A. McIlvenny, K. Nakamura, L. Obst-Huebl, P. Rubovic, S. Weber, F. P. Condamine; Compact in-vacuum gamma-ray spectrometer for high-repetition rate PW-class laser–matter interaction. Rev. Sci. Instrum. 1 February 2025; 96 (2): 023102. https://doi.org/10.1063/5.0206348
 
 Alternatively, you can use the following BibTeX entry for LaTeX users:
 
 ```bibtex
-@misc{fauvel2024cmaes,
-  author = {Gaëtan Fauvel},
-  title = {},
-  howpublished = {},
-  note = {}
+@article{10.1063/5.0206348,
+    author = {Fauvel, G. and Tangtartharakul, K. and Arefiev, A. and De Chant, J. and Hakimi, S. and Klimo, O. and Manuel, M. and McIlvenny, A. and Nakamura, K. and Obst-Huebl, L. and Rubovic, P. and Weber, S. and Condamine, F. P.},
+    title = {Compact in-vacuum gamma-ray spectrometer for high-repetition rate PW-class laser–matter interaction},
+    journal = {Review of Scientific Instruments},
+    volume = {96},
+    number = {2},
+    pages = {023102},
+    year = {2025},
+    month = {02},
+    issn = {0034-6748},
+    doi = {10.1063/5.0206348},
+    url = {https://doi.org/10.1063/5.0206348},
+    eprint = {https://pubs.aip.org/aip/rsi/article-pdf/doi/10.1063/5.0206348/20383725/023102\_1\_5.0206348.pdf},
 }
 ```
 
@@ -127,7 +136,7 @@ Alternatively, you can use the following BibTeX entry for LaTeX users:
 For further information, questions, or collaboration, please contact:
 
 **Fauvel Gaëtan**  
-Email: [gaetan.fauvel@eli-beams.eu](mailto:gaetan.fauvel@eli-beams.eu)
+Email: [fauvel.gaetan@outlook.com](mailto:fauvel.gaetan@outlook.com)
 
 ## Acknowledgments
 
@@ -135,8 +144,9 @@ We wish to acknowledge the support of the National Sci-
 ence Foundation (NSF Grant No. PHY-2206777) and the Czech Science Foundation
 (GA ČR) for funding on project number No. 22-42890L in the frame of the National Science Foundation–Czech Science Foundation partnership.
 
-## License
-This script uses the CMA algortihm from nikohansen available at https://github.com/CMA-ES/pycma under the licensing
+## Third-Party Licenses
+
+This project uses the `py-cma` library, which is licensed under the BSD 3-Clause License.  
 
 The BSD 3-Clause License
 Copyright (c) 2014 Inria
