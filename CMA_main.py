@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 # CMA-based Optimizer for Custom ML Training
-# Author: G. Fauvel | © 2024
+# Author: G. Fauvel | © 2025
 # License: PolyForm Noncommercial 1.0.0
 # Signature: 34c6bd9b (commit hash seed)
 # ----------------------------------------------------------------------------
@@ -16,7 +16,6 @@ import re
 import matplotlib.pyplot as plt
 import cma
 from scipy.interpolate import RegularGridInterpolator
-from scipy.stats import norm
 import base64
 print(base64.b64decode("Q3JlYXRlZCBieSBHLkZhdXZlbCAyMDI1"))
 class Config:
