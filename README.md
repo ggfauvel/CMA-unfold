@@ -127,7 +127,7 @@ Alternatively, you can use the following BibTeX entry for LaTeX users:
 For further information, questions, or collaboration, please contact:
 
 **Fauvel Gaëtan**  
-Email: [gaetan.fauvel@eli-beams.eu](mailto:gaetan.fauvel@eli-beams.eu)
+Email: [fauvel.gaetan@outlook.com](mailto:fauvel.gaetan@outlook.com)
 
 ## Acknowledgments
 
