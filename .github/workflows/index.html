@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMA Spectral Unfolder — Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2129;
+  --bg-code: #1a1f28;
+  --border: #30363d;
+  --border-light: #3d444d;
+  --text-primary: #e6edf3;
+  --text-secondary: #9daab8;
+  --text-muted: #6e7a88;
+  --accent: #58a6ff;
+  --accent-dim: #1f3a5f;
+  --accent-warm: #f0883e;
+  --accent-green: #3fb950;
+  --accent-red: #f85149;
+  --accent-purple: #bc8cff;
+  --sidebar-w: 280px;
+  --header-h: 56px;
+  --radius: 8px;
+  --font-body: 'DM Sans', sans-serif;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 24px); }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  font-size: 15.5px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ─────────────────────────────────── */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px;
+}
+.site-header .logo {
+  font-family: var(--font-mono);
+  font-weight: 700; font-size: 16px;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+.site-header .logo span { color: var(--text-muted); font-weight: 400; }
+.site-header .badge {
+  margin-left: 12px;
+  font-size: 10.5px; font-weight: 600;
+  padding: 2px 8px; border-radius: 12px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.header-right {
+  margin-left: auto; display: flex; align-items: center; gap: 16px;
+}
+.header-right a {
+  color: var(--text-secondary); text-decoration: none; font-size: 13.5px; font-weight: 500;
+  transition: color 0.2s;
+}
+.header-right a:hover { color: var(--accent); }
+.menu-toggle {
+  display: none; background: none; border: none; color: var(--text-secondary);
+  cursor: pointer; font-size: 22px; padding: 4px;
+}
+
+/* ── Sidebar ────────────────────────────────── */
+.sidebar {
+  position: fixed; top: var(--header-h); left: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 20px 0;
+  z-index: 50;
+  transition: transform 0.3s ease;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+
+.sidebar .nav-section {
+  padding: 0 16px; margin-bottom: 8px;
+}
+.sidebar .nav-section-title {
+  font-size: 10.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--text-muted); padding: 8px 8px 6px;
+}
+.sidebar a {
+  display: block; padding: 5px 8px 5px 12px;
+  color: var(--text-secondary); text-decoration: none;
+  font-size: 13.5px; font-weight: 400;
+  border-radius: 6px; border-left: 2px solid transparent;
+  transition: all 0.15s;
+  line-height: 1.45;
+}
+.sidebar a:hover { color: var(--text-primary); background: rgba(88,166,255,0.06); }
+.sidebar a.active {
+  color: var(--accent); background: rgba(88,166,255,0.08);
+  border-left-color: var(--accent); font-weight: 500;
+}
+.sidebar a.sub { padding-left: 28px; font-size: 12.5px; }
+
+/* ── Main content ───────────────────────────── */
+.main {
+  margin-left: var(--sidebar-w);
+  margin-top: var(--header-h);
+  max-width: 860px;
+  padding: 40px 48px 120px;
+}
+
+/* ── Typography ─────────────────────────────── */
+h1 {
+  font-family: var(--font-serif);
+  font-size: 2.4em; font-weight: 700; line-height: 1.2;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.subtitle {
+  font-size: 1.1em; color: var(--text-secondary); line-height: 1.6;
+  margin-bottom: 36px; max-width: 640px;
+}
+
+h2 {
+  font-family: var(--font-serif);
+  font-size: 1.6em; font-weight: 700; line-height: 1.25;
+  margin-top: 56px; margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+h3 {
+  font-size: 1.15em; font-weight: 600; margin-top: 36px; margin-bottom: 10px;
+  color: var(--text-primary);
+}
+h4 {
+  font-size: 0.95em; font-weight: 600; margin-top: 24px; margin-bottom: 8px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  letter-spacing: -0.3px;
+}
+
+p { margin-bottom: 14px; color: var(--text-secondary); }
+p strong { color: var(--text-primary); }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+ul, ol { margin: 0 0 16px 20px; color: var(--text-secondary); }
+li { margin-bottom: 6px; }
+li code { font-size: 0.88em; }
+
+/* ── Code blocks ────────────────────────────── */
+pre {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  overflow-x: auto;
+  margin: 16px 0 20px;
+  font-size: 13px;
+  line-height: 1.65;
+  position: relative;
+}
+pre code {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  background: none; padding: 0; border: none;
+}
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--bg-tertiary);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+/* ── Syntax highlighting (manual classes) ──── */
+.kw { color: #ff7b72; }
+.fn { color: #d2a8ff; }
+.st { color: #a5d6ff; }
+.cm { color: #6e7a88; font-style: italic; }
+.nb { color: #79c0ff; }
+.nu { color: #f0883e; }
+.op { color: #c9d1d9; }
+.dc { color: #7ee787; }
+.va { color: #ffa657; }
+
+/* ── Callout boxes ──────────────────────────── */
+.callout {
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-left: 3px solid;
+  font-size: 14px;
+}
+.callout p { margin-bottom: 6px; }
+.callout p:last-child { margin-bottom: 0; }
+.callout-title {
+  font-weight: 700; font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+.callout.note {
+  background: rgba(88,166,255,0.06);
+  border-color: var(--accent);
+}
+.callout.note .callout-title { color: var(--accent); }
+.callout.warn {
+  background: rgba(240,136,62,0.06);
+  border-color: var(--accent-warm);
+}
+.callout.warn .callout-title { color: var(--accent-warm); }
+.callout.tip {
+  background: rgba(63,185,80,0.06);
+  border-color: var(--accent-green);
+}
+.callout.tip .callout-title { color: var(--accent-green); }
+.callout.danger {
+  background: rgba(248,81,73,0.06);
+  border-color: var(--accent-red);
+}
+.callout.danger .callout-title { color: var(--accent-red); }
+
+/* ── Tables ─────────────────────────────────── */
+table {
+  width: 100%; border-collapse: collapse;
+  margin: 16px 0 24px; font-size: 13.5px;
+}
+th {
+  text-align: left; padding: 10px 14px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-weight: 600; font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border);
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+tr:hover td { background: rgba(88,166,255,0.03); }
+
+/* ── Diagrams / figures ─────────────────────── */
+.figure {
+  margin: 28px 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+}
+.figure svg { max-width: 100%; height: auto; }
+.figure-caption {
+  margin-top: 12px; font-size: 12.5px;
+  color: var(--text-muted); font-style: italic;
+}
+
+/* ── Architecture diagram (ASCII-art style) ── */
+.arch-box {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  white-space: pre;
+  overflow-x: auto;
+  text-align: left;
+  display: inline-block;
+}
+.arch-box .hl { color: var(--accent); font-weight: 700; }
+.arch-box .hl2 { color: var(--accent-warm); font-weight: 700; }
+.arch-box .hl3 { color: var(--accent-green); font-weight: 700; }
+
+/* ── Collapsible sections ───────────────────── */
+details {
+  margin: 16px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+details summary {
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  font-weight: 600; font-size: 14px;
+  color: var(--text-primary);
+  user-select: none;
+  transition: background 0.15s;
+  list-style: none;
+}
+details summary::before {
+  content: '▸ '; color: var(--accent); margin-right: 4px;
+  display: inline-block; transition: transform 0.2s;
+}
+details[open] summary::before { content: '▾ '; }
+details summary:hover { background: var(--bg-tertiary); }
+details .details-content { padding: 16px 20px; }
+
+/* ── KaTeX overrides ────────────────────────── */
+.katex { font-size: 1.05em; }
+.katex-display { margin: 18px 0; overflow-x: auto; overflow-y: hidden; }
+.math-block {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 960px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 28px 20px 80px; }
+  .menu-toggle { display: block; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="site-header">
+  <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle menu">☰</button>
+  <div class="logo">CMA-Unfolder<span>.docs</span></div>
+  <span class="badge">v1.0</span>
+  <div class="header-right">
+    <a href="#getting-started">Quick Start</a>
+    <a href="#api-reference">API</a>
+    <a href="https://github.com/" target="_blank">GitHub ↗</a>
+  </div>
+</header>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<nav class="sidebar">
+  <div class="nav-section">
+    <div class="nav-section-title">Overview</div>
+    <a href="#introduction">Introduction</a>
+    <a href="#physics-background">Physics Background</a>
+    <a href="#architecture">Architecture</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Setup</div>
+    <a href="#getting-started">Getting Started</a>
+    <a href="#installation">Installation</a>
+    <a href="#directory-structure">Directory Structure</a>
+    <a href="#response-matrix-format">Response Matrix Format</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Configuration</div>
+    <a href="#config-class">Config Class</a>
+    <a href="#config-energy">Energy Grids</a>
+    <a href="#config-roi">ROI &amp; Calibration</a>
+    <a href="#config-error">Error Analysis Files</a>
+    <a href="#config-species2">Second Species</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Core Concepts</div>
+    <a href="#forward-model">Forward Model</a>
+    <a href="#loss-function">Loss Function</a>
+    <a href="#smoothness">Smoothness Penalties</a>
+    <a href="#calibration">Calibration Tuning</a>
+    <a href="#cma-es">CMA-ES Internals</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">API Reference</div>
+    <a href="#api-reference">Overview</a>
+    <a href="#api-speciesconfig">SpeciesConfig</a>
+    <a href="#api-multispeciesoptimizer">MultiSpeciesOptimizer</a>
+    <a href="#api-optimizationresult">OptimizationResult</a>
+    <a href="#api-dataprocessor">DataProcessor</a>
+    <a href="#api-erroranalysis">ErrorAnalysis</a>
+    <a href="#api-plotter">Plotter</a>
+    <a href="#api-helpers">Helper Functions</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Tutorials</div>
+    <a href="#tutorial-single">Single Species</a>
+    <a href="#tutorial-multi">Multi-Species</a>
+    <a href="#tutorial-synthetic">Synthetic Closure Test</a>
+    <a href="#tutorial-calibration">Calibration Tuning</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Advanced</div>
+    <a href="#hyperparameters">Hyperparameter Guide</a>
+    <a href="#diagnostics">Diagnostics &amp; Debugging</a>
+    <a href="#performance">Performance &amp; Scaling</a>
+    <a href="#extending">Extending the Code</a>
+    <a href="#known-issues">Known Issues</a>
+    <a href="#license">License</a>
+  </div>
+</nav>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main">
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="introduction">
+<h1>CMA Spectral Unfolder</h1>
+<p class="subtitle">
+  Multi-species spectral unfolding from scintillator stack detector data using
+  CMA-ES (Covariance Matrix Adaptation Evolution Strategy), with Huber-robust
+  fidelity, Tikhonov / logistic smoothness regularisation, and optional
+  per-detector calibration tuning.
+</p>
+
+<p>
+  This code reconstructs particle energy spectra from a stack of scintillator
+  detectors by inverting a pre-computed FLUKA Monte Carlo response matrix (RM).
+  The inverse problem is ill-posed: the code solves it by minimising a
+  regularised objective function using the derivative-free CMA-ES optimizer,
+  supporting up to three particle species simultaneously.
+</p>
+
+<div class="callout note">
+  <div class="callout-title">Scope</div>
+  <p>
+    The optimizer is designed for <strong>high-energy-density physics (HEDP)
+    diagnostics</strong>, specifically scintillator-based calorimeters used in
+    laser–plasma interaction experiments. However, the RM-inversion framework
+    is general and applicable to any detector system for which a Monte Carlo
+    response matrix is available.
+  </p>
+</div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="physics-background">
+<h2>Physics Background</h2>
+
+<h3>The Inverse Problem</h3>
+<p>
+  A stack of <em>N</em> scintillator slabs records the energy deposited by
+  a broad-spectrum particle beam. The measured signal in detector channel
+  \(d_j\) (\(j = 1 \ldots N_\text{FLUKA}\)) is a linear superposition of
+  mono-energetic responses:
+</p>
+<div class="math-block">
+  $$ d_j = \int R_j(E)\,\frac{dN}{dE}\,dE \;\approx\; \sum_{i=1}^{N_\text{guess}} R_j(E_i)\,S_i $$
+</div>
+<p>
+  where \(R_j(E_i)\) is the response matrix element (energy deposited in
+  detector \(j\) by a particle of energy \(E_i\)), and \(S_i = (dN/dE)_i\)
+  is the unknown spectrum evaluated at the \(i\)-th energy bin. In matrix
+  form: \(\mathbf{d} = \mathbf{R}\,\mathbf{s}\).
+</p>
+
+<h3>Why CMA-ES?</h3>
+<p>
+  The response matrix is typically rank-deficient or severely ill-conditioned
+  (condition numbers of \(10^6\)–\(10^{12}\) are common for thick-stack
+  calorimeters). Classical linear inversions (SVD truncation, Tikhonov)
+  struggle with positivity constraints and multi-species superposition.
+  CMA-ES is a gradient-free evolutionary strategy that handles:
+</p>
+<ul>
+  <li>Non-convex, multi-modal landscapes</li>
+  <li>Box constraints (positivity via log-space parameterisation)</li>
+  <li>Heterogeneous variable types (spectra + calibration factors)</li>
+  <li>Arbitrary regularisation terms without differentiability requirements</li>
+</ul>
+
+<h3>Multi-Species Unfolding</h3>
+<p>
+  When the detector is sensitive to multiple particle types (e.g. photons +
+  electrons), the measured signal is:
+</p>
+<div class="math-block">
+  $$ d_j = \sum_{k=1}^{K} \sum_{i=1}^{N_k} R_j^{(k)}(E_i^{(k)})\,S_i^{(k)} $$
+</div>
+<p>
+  where \(k\) indexes the species, each with its own RM and energy grid. The
+  optimiser solves for all species simultaneously, which breaks the degeneracy
+  that arises from fitting a single RM to a mixed signal.
+</p>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="architecture">
+<h2>Architecture</h2>
+
+<div class="figure">
+<div class="arch-box">
+┌─────────────────────────────────────────────────────────────────┐
+│                        <span class="hl">Pipeline Overview</span>                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌──────────────┐     ┌───────────────┐     ┌───────────────┐  │
+│  │ <span class="hl2">FLUKA RM</span>      │     │ <span class="hl2">Scintillator</span>  │     │ <span class="hl2">Error Files</span>   │  │
+│  │ *_FLUKA.txt   │     │ raw_data.tiff │     │ mean*_VAC.txt │  │
+│  │ *_Energy.txt  │     └──────┬────────┘     └──────┬────────┘  │
+│  │ *_Spectrum.txt│            │                      │          │
+│  └──────┬───────┘            │                      │          │
+│         │                    │                      │          │
+│         ▼                    ▼                      ▼          │
+│  ┌──────────────┐     ┌─────────────┐     ┌──────────────┐    │
+│  │<span class="hl3">DataProcessor</span> │     │<span class="hl3">DataProcessor</span>│     │<span class="hl3">ErrorAnalysis</span> │    │
+│  │ import_RM()  │     │ read_image() │     │ get_errors() │    │
+│  └──────┬───────┘     └──────┬──────┘     └──────┬───────┘    │
+│         │                    │                    │            │
+│         ▼                    ▼                    │            │
+│  ┌──────────────┐     ┌───────────┐              │            │
+│  │<span class="hl">SpeciesConfig</span> │────▶│<span class="hl">MultiSpecies</span>│              │            │
+│  │ (per species)│     │<span class="hl">Optimizer</span>  │              │            │
+│  └──────────────┘     │           │              │            │
+│                       │  CMA-ES   │              │            │
+│                       │  loop     │              │            │
+│                       └─────┬─────┘              │            │
+│                             │                    │            │
+│                             ▼                    │            │
+│                   ┌──────────────────┐           │            │
+│                   │<span class="hl">OptimizationResult</span>│───────────┘            │
+│                   │ spectra_linear   │                        │
+│                   │ spectra_log      │──▶ <span class="hl3">Plotter</span>             │
+│                   │ facts            │                        │
+│                   └──────────────────┘                        │
+└─────────────────────────────────────────────────────────────────┘
+</div>
+<div class="figure-caption">Fig. 1 — Data flow from raw inputs through the optimiser to results and error analysis.</div>
+</div>
+
+<p>
+  The code is organised into six classes and a set of free functions:
+</p>
+<table>
+  <thead><tr><th>Component</th><th>Role</th></tr></thead>
+  <tbody>
+    <tr><td><code>Config</code></td><td>Global parameters: paths, energy grids, ROI, calibration, error files</td></tr>
+    <tr><td><code>SpeciesConfig</code></td><td>Per-species RM + energy grid + smoothing hyperparameters</td></tr>
+    <tr><td><code>MultiSpeciesOptimizer</code></td><td>CMA-ES driver: builds objective, runs evolution loop</td></tr>
+    <tr><td><code>OptimizationResult</code></td><td>Structured output container with accessor methods</td></tr>
+    <tr><td><code>DataProcessor</code></td><td>RM import and experimental image reading</td></tr>
+    <tr><td><code>ErrorAnalysis</code></td><td>2-D error matrix interpolation and error-bar plotting</td></tr>
+    <tr><td><code>Plotter</code></td><td>Standard diagnostic plots</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="getting-started">
+<h2>Getting Started</h2>
+
+<section id="installation">
+<h3>Installation</h3>
+
+<h4>Requirements</h4>
+<ul>
+  <li>Python ≥ 3.9</li>
+  <li>NumPy, Pandas, Matplotlib, Pillow, SciPy</li>
+  <li><code>cma</code> (pycma) — the CMA-ES implementation by N. Hansen</li>
+</ul>
+
+<pre><code><span class="cm"># Install dependencies</span>
+pip install numpy pandas matplotlib pillow scipy cma</code></pre>
+
+<pre><code><span class="cm"># Clone and enter the project</span>
+git clone https://github.com/your-org/cma-unfolder.git
+cd cma-unfolder</code></pre>
+
+<div class="callout warn">
+  <div class="callout-title">Performance Warning</div>
+  <p>
+    CMA-ES scales as \(\mathcal{O}(n^2)\) per generation with the number of
+    variables \(n\). With <code>N_guess = 25</code> per species and
+    calibration tuning off, \(n = 25\) (or 30 for two species). This is
+    well within the efficient regime. Do <strong>not</strong> exceed
+    <code>N_guess ≈ 200</code> on a workstation without switching to a
+    large-scale CMA variant.
+  </p>
+</div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="directory-structure">
+<h3>Directory Structure</h3>
+<pre><code>cma-unfolder/
+├── CMA_optimizer.py          <span class="cm"># Main script</span>
+├── images/
+│   └── raw_data.tiff         <span class="cm"># Scintillator image</span>
+├── RM/
+│   └── Response_matrix_double_population/
+│       ├── Response_matrix_p/ <span class="cm"># Photon RM files</span>
+│       │   ├── 0.05_Energy.txt
+│       │   ├── 0.05_Spectrum.txt
+│       │   ├── 0.05_FLUKA.txt
+│       │   ├── 0.1_Energy.txt
+│       │   └── ...
+│       └── Response_matrix_e/ <span class="cm"># Electron RM files</span>
+│           └── ...
+├── Error/
+│   ├── mean1_VAC.txt          <span class="cm"># Error level 1 (signal &gt; 10%)</span>
+│   ├── mean2_VAC.txt          <span class="cm"># Error level 2 (1% &lt; signal &lt; 10%)</span>
+│   ├── mean3_VAC.txt          <span class="cm"># Error level 3 (0.1% &lt; signal &lt; 1%)</span>
+│   └── mean4_VAC.txt          <span class="cm"># Error level 4 (signal &lt; 0.1%)</span>
+└── README.md</code></pre>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="response-matrix-format">
+<h3>Response Matrix Format</h3>
+<p>
+  Each mono-energetic FLUKA simulation at energy \(E_k\) (in MeV) produces
+  a triplet of files, named using the energy value as prefix:
+</p>
+<table>
+  <thead><tr><th>File</th><th>Contents</th><th>Shape</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>{E_k}_Energy.txt</code></td>
+      <td>Energy bin edges of the simulated spectrum</td>
+      <td>\(N_\text{sim} \times 1\)</td>
+    </tr>
+    <tr>
+      <td><code>{E_k}_Spectrum.txt</code></td>
+      <td>Deposited energy spectrum (reserved, not currently used)</td>
+      <td>\(N_\text{sim} \times 1\)</td>
+    </tr>
+    <tr>
+      <td><code>{E_k}_FLUKA.txt</code></td>
+      <td>Integrated detector response per scintillator slab</td>
+      <td>\(N_\text{FLUKA} \times 1\)</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout tip">
+  <div class="callout-title">Naming Convention</div>
+  <p>
+    The file prefix must be a parseable floating-point number (e.g.
+    <code>0.05</code>, <code>1.5</code>, <code>100</code>). The importer
+    sorts by this value and uses it as the RM energy axis.
+  </p>
+</div>
+</section>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="config-class">
+<h2>Configuration — <code>Config</code></h2>
+<p>
+  All user-tunable parameters live in the <code>Config</code> class as
+  class-level attributes. Modify this class to adapt the code to a new
+  experimental setup. No constructor is needed — all values are set at
+  import time.
+</p>
+
+<section id="config-energy">
+<h3>Energy Grids</h3>
+<table>
+  <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>N_guess</code></td><td>int</td><td>Number of spectral bins (CMA variables per species). Default 25.</td></tr>
+    <tr><td><code>E_guess_range</code></td><td>tuple</td><td>\(\log_{10}(E_\text{min}/\text{MeV}),\;\log_{10}(E_\text{max}/\text{MeV})\)</td></tr>
+    <tr><td><code>E_guess</code></td><td>ndarray</td><td>Log-spaced energy centroids, shape <code>(N_guess,)</code></td></tr>
+    <tr><td><code>smooth_factor</code></td><td>float</td><td>Smoothness penalty weight, auto-scaled by mean Δlog₁₀E</td></tr>
+  </tbody>
+</table>
+
+<div class="callout note">
+  <div class="callout-title">Choosing N_guess</div>
+  <p>
+    The number of spectral bins controls the trade-off between spectral
+    resolution and numerical stability. Too few bins under-resolve spectral
+    features; too many introduce null-space degrees of freedom that the
+    regulariser must suppress. Start with <code>N_guess ≈ N_FLUKA</code>
+    and increase if the residuals show systematic structure.
+  </p>
+</div>
+</section>
+
+<section id="config-roi">
+<h3>ROI &amp; Calibration</h3>
+<p>
+  The <code>ROI</code> array defines pixel rectangles for each scintillator
+  slab in the experimental image. Each row is
+  <code>[y_min, y_max, x_min, x_max]</code>. The <code>factor</code> array
+  contains per-detector calibration multipliers applied to the raw FLUKA
+  output during RM import.
+</p>
+
+<div class="callout warn">
+  <div class="callout-title">User Input Required</div>
+  <p>
+    The <code>factor</code> array must be determined experimentally for your
+    specific detector stack. If your RM is already properly calibrated, set
+    all entries to <code>1.0</code>. Incorrect calibration factors will bias
+    the unfolded spectrum systematically.
+  </p>
+</div>
+</section>
+
+<section id="config-error">
+<h3>Error Analysis Files</h3>
+<p>
+  Four text files, each containing a vector of length <code>len(E_error)</code>,
+  encoding the relative unfolding uncertainty at four signal-to-noise thresholds.
+  These are pre-computed by running <code>Calc_errors.py</code> on the RM.
+</p>
+<table>
+  <thead><tr><th>File</th><th>Signal Regime</th></tr></thead>
+  <tbody>
+    <tr><td><code>mean1_VAC.txt</code></td><td>Signal / peak &gt; 10%</td></tr>
+    <tr><td><code>mean2_VAC.txt</code></td><td>1% &lt; signal / peak &lt; 10%</td></tr>
+    <tr><td><code>mean3_VAC.txt</code></td><td>0.1% &lt; signal / peak &lt; 1%</td></tr>
+    <tr><td><code>mean4_VAC.txt</code></td><td>signal / peak &lt; 0.1%</td></tr>
+  </tbody>
+</table>
+</section>
+
+<section id="config-species2">
+<h3>Second Species (Electrons)</h3>
+<p>
+  When <code>n_species = 2</code>, the code loads a second RM from
+  <code>folder_path_e</code> with its own energy grid
+  (<code>E_guess_e</code>, <code>N_guess_e</code>). The electron
+  energy range and smoothing weight are configured independently.
+</p>
+</section>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="forward-model">
+<h2>Forward Model</h2>
+<p>
+  For a single species with spectrum \(\{S_i\}_{i=1}^{N_\text{guess}}\)
+  in log₁₀ space, the predicted detector signal is:
+</p>
+<div class="math-block">
+  $$ \hat{d}_j = \sum_{i=1}^{N_\text{guess}} 10^{S_i} \cdot R_{ij} \cdot f_i \cdot c_j $$
+</div>
+<p>where:</p>
+<ul>
+  <li>\(R_{ij}\) = <code>FLUKA_tot[nearest[i], j]</code> — normalised RM element</li>
+  <li>\(f_i\) = <code>FLUKA_fact[nearest[i]]</code> — peak normalization factor (restores absolute scale)</li>
+  <li>\(c_j\) = <code>facts[j]</code> — optional per-detector calibration correction (\(\approx 1\))</li>
+</ul>
+<p>
+  For \(K\) species the total signal is the sum:
+  \(\hat{d}_j = \sum_{k=1}^{K} \hat{d}_j^{(k)}\).
+  This is implemented in <code>_calc_FLUKA_species()</code> and is fully
+  vectorised over energy bins.
+</p>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="loss-function">
+<h2>Loss Function</h2>
+<p>
+  The total objective minimised by CMA-ES is:
+</p>
+<div class="math-block">
+  $$ \mathcal{L}(\mathbf{x}) = \mathcal{L}_\text{fid} + \lambda_s\,\mathcal{L}_\text{smooth} + \lambda_c\,\mathcal{L}_\text{calib} $$
+</div>
+
+<h3>Fidelity Term</h3>
+<p>
+  Relative squared residuals with Huber robustification:
+</p>
+<div class="math-block">
+  $$ \mathcal{L}_\text{fid} = \sum_{j=1}^{N_\text{FLUKA}} H_\delta\!\left(\frac{(d_j - \hat{d}_j)^2}{d_j^2}\right) $$
+</div>
+<p>
+  where \(H_\delta(r) = \frac{1}{2}\min(|r|,\delta)^2 + \delta\,(|r| - \min(|r|,\delta))\)
+  transitions from quadratic to linear at threshold \(\delta\).
+  This suppresses the influence of outlier detector channels (e.g.
+  damaged scintillators or channels with poor RM coverage).
+</p>
+
+<div class="callout tip">
+  <div class="callout-title">Huber δ</div>
+  <p>
+    The default <code>huber_delta = 1e-2</code> means that relative residuals
+    above ~10% are down-weighted linearly rather than quadratically. Increase
+    δ if your data is clean; decrease it if you suspect systematic errors in
+    specific channels.
+  </p>
+</div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="smoothness">
+<h2>Smoothness Penalties</h2>
+
+<h3>Simple (Tikhonov-like)</h3>
+<p>
+  When <code>adaptive_smoothing = False</code>:
+</p>
+<div class="math-block">
+  $$ \mathcal{L}_\text{smooth}^{(k)} = \sum_{i=1}^{N-2}\left(S_{i+2}^{(k)} - 2S_{i+1}^{(k)} + S_i^{(k)}\right)^2 $$
+</div>
+<p>
+  This is the squared \(\ell_2\) norm of the second finite difference — a
+  discrete approximation to the curvature penalty \(\int |S''(E)|^2 dE\).
+</p>
+
+<h3>Logistic-Weighted</h3>
+<p>
+  When <code>adaptive_smoothing = True</code>, the penalty uses first
+  differences with bin-dependent weights:
+</p>
+<div class="math-block">
+  $$ w(x) = w_\min + (1 - w_\min)\;\sigma(-k(x - x_0)) $$
+</div>
+<p>
+  where \(x = i/(N-1)\) is the normalised bin index and \(\sigma\) is the
+  logistic function. This reduces regularisation strength at the high-energy
+  tail where the RM sensitivity drops and the spectrum is expected to fall
+  sharply, avoiding the artificial flattening that uniform smoothing
+  produces near the cutoff.
+</p>
+
+<table>
+  <thead><tr><th>Parameter</th><th>Attribute</th><th>Default</th><th>Effect</th></tr></thead>
+  <tbody>
+    <tr><td>Onset</td><td><code>smooth_transition_start</code></td><td>0.85</td><td>Fraction of bins before weight starts dropping</td></tr>
+    <tr><td>Floor</td><td><code>smooth_min_weight</code></td><td>0.01</td><td>Minimum weight at the tail (0 = no regularisation)</td></tr>
+    <tr><td>Steepness</td><td><code>smooth_steepness</code></td><td>30</td><td>Logistic transition sharpness</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="calibration">
+<h2>Calibration Factor Tuning</h2>
+<p>
+  When <code>tune_calibration = True</code>, \(N_\text{FLUKA}\) additional
+  variables are appended to the CMA vector, representing per-detector
+  multiplicative corrections \(c_j\). They are initialised near 1.0 and
+  constrained by a smooth quartic barrier:
+</p>
+<div class="math-block">
+  $$ \mathcal{L}_\text{calib} = \sum_j \left[\text{sp}(1 - c_j)^4 + \text{sp}(c_j - 1)^4\right] $$
+</div>
+<p>
+  where \(\text{sp}(x) = \frac{1}{k}\log(1 + e^{kx})\) is the softplus
+  function with sharpness \(k = 300\). This allows small deviations from
+  unity while strongly penalising large excursions.
+</p>
+
+<div class="callout warn">
+  <div class="callout-title">When to Use</div>
+  <p>
+    Enable calibration tuning only when you have reason to believe the
+    pre-computed <code>factor</code> array has residual errors (e.g. from
+    aging scintillators or position-dependent light collection). The
+    additional degrees of freedom can absorb real spectral features if the
+    penalty weight <code>facts_penalty_weight</code> is too low.
+  </p>
+</div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="cma-es">
+<h2>CMA-ES Internals</h2>
+<p>
+  The optimizer uses <a href="https://github.com/CMA-ES/pycma">pycma</a>
+  with the following default settings:
+</p>
+<table>
+  <thead><tr><th>Option</th><th>Value</th><th>Rationale</th></tr></thead>
+  <tbody>
+    <tr><td><code>sigma0</code></td><td>3.0</td><td>Initial step size (log₁₀ scale; covers ~3 decades)</td></tr>
+    <tr><td><code>CMA_stds</code></td><td>5.0 (spectra), 0.05 (facts)</td><td>Heterogeneous scaling for different variable types</td></tr>
+    <tr><td><code>popsize</code></td><td>max(17, 4+3ln n)</td><td>Default CMA heuristic, floor at 17</td></tr>
+    <tr><td><code>maxiter</code></td><td>100,000</td><td>Upper bound; typically converges in 5k–30k</td></tr>
+    <tr><td><code>tolx</code></td><td>1e-8</td><td>Convergence on variable change</td></tr>
+    <tr><td><code>CMA_active</code></td><td>1</td><td>Active CMA (exploits negative covariance information)</td></tr>
+  </tbody>
+</table>
+
+<p>
+  The objective function is dispatched once before the loop via
+  <code>_build_objective_fn()</code>, which selects among four variants
+  (base / smooth / calib / smooth+calib) based on the active flags.
+  This eliminates per-evaluation branching overhead.
+</p>
+
+<h3>Optimisation Vector Layout</h3>
+<pre><code>x = [ S_photon (N_guess_p) | S_electron (N_guess_e) | facts (N_FLUKA) ]
+      ←── spectral vars ──────────────────────────→  ←── optional ──→</code></pre>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="api-reference">
+<h2>API Reference</h2>
+</section>
+
+<section id="api-speciesconfig">
+<h3><code>SpeciesConfig</code></h3>
+<p>Dataclass. Container for one particle species' RM and optimiser settings.</p>
+
+<h4>Constructor Parameters</h4>
+<table>
+  <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>label</code></td><td>str</td><td>Identifier (e.g. <code>'photon'</code>, <code>'electron'</code>)</td></tr>
+    <tr><td><code>E</code></td><td>ndarray (N_data,)</td><td>RM energy axis (MeV, ascending)</td></tr>
+    <tr><td><code>E_guess</code></td><td>ndarray (N_guess,)</td><td>Desired bin centroids; snapped to RM axis by <code>resolve()</code></td></tr>
+    <tr><td><code>FLUKA_tot</code></td><td>ndarray (N_data, N_FLUKA)</td><td>Normalised detector RM</td></tr>
+    <tr><td><code>FLUKA_fact</code></td><td>ndarray (N_data, 1)</td><td>Peak normalisation factors</td></tr>
+    <tr><td><code>smooth_factor</code></td><td>float</td><td>Smoothness penalty weight. Default <code>1.3e-5</code></td></tr>
+    <tr><td><code>smooth_transition_start</code></td><td>float</td><td>Logistic onset (0–1). Default <code>0.85</code></td></tr>
+    <tr><td><code>smooth_min_weight</code></td><td>float</td><td>Logistic floor. Default <code>0.01</code></td></tr>
+    <tr><td><code>smooth_steepness</code></td><td>float</td><td>Logistic k. Default <code>30.0</code></td></tr>
+  </tbody>
+</table>
+
+<h4>Methods</h4>
+
+<h4><code>resolve()</code></h4>
+<p>
+  Must be called once before optimisation. Maps <code>E_guess</code> onto the
+  RM energy axis via nearest-neighbour lookup (injective), sets
+  <code>nearest_indices</code> and <code>N_guess</code>.
+</p>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="api-multispeciesoptimizer">
+<h3><code>MultiSpeciesOptimizer</code></h3>
+
+<h4>Constructor Parameters</h4>
+<table>
+  <thead><tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>species_list</code></td><td>List[SpeciesConfig]</td><td>—</td><td>1–3 species configs</td></tr>
+    <tr><td><code>Exp_FLUKA</code></td><td>ndarray</td><td>—</td><td>Normalised experimental signal</td></tr>
+    <tr><td><code>tune_calibration</code></td><td>bool</td><td>False</td><td>Optimise per-detector factors</td></tr>
+    <tr><td><code>smoothing</code></td><td>bool</td><td>True</td><td>Enable smoothness regularisation</td></tr>
+    <tr><td><code>adaptive_smoothing</code></td><td>bool</td><td>False</td><td>Logistic (True) vs simple (False)</td></tr>
+    <tr><td><code>lower_bound</code></td><td>float</td><td>-20</td><td>CMA lower bound (log₁₀)</td></tr>
+    <tr><td><code>upper_bound</code></td><td>float</td><td>20</td><td>CMA upper bound (log₁₀)</td></tr>
+    <tr><td><code>facts_bounds</code></td><td>tuple</td><td>(-0.2, 0.2)</td><td>Calibration factor range around 1</td></tr>
+    <tr><td><code>huber_delta</code></td><td>float</td><td>1e-2</td><td>Huber transition threshold</td></tr>
+    <tr><td><code>facts_penalty_weight</code></td><td>float</td><td>1e-2</td><td>Weight on calibration constraint</td></tr>
+    <tr><td><code>cma_options</code></td><td>dict</td><td>None</td><td>Override CMA-ES settings</td></tr>
+  </tbody>
+</table>
+
+<h4>Methods</h4>
+
+<h4><code>run_CMA() → OptimizationResult</code></h4>
+<p>
+  Execute the CMA-ES evolution loop. Returns a structured
+  <code>OptimizationResult</code>.
+</p>
+
+<h4><code>calc_FLUKA(result) → ndarray</code></h4>
+<p>
+  Reconstruct the total detector signal from an <code>OptimizationResult</code>.
+  Useful for computing post-hoc residuals.
+</p>
+
+<h4><code>mmin(x) → float</code></h4>
+<p>
+  Internal objective function called by CMA-ES. Unpacks <code>x</code> and
+  delegates to the pre-selected variant.
+</p>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="api-optimizationresult">
+<h3><code>OptimizationResult</code></h3>
+<p>Dataclass returned by <code>run_CMA()</code>.</p>
+
+<table>
+  <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>spectra_linear</code></td><td>list[ndarray]</td><td>Unfolded spectra (linear scale), one per species</td></tr>
+    <tr><td><code>spectra_log</code></td><td>list[ndarray]</td><td>Same in log₁₀ (raw CMA output)</td></tr>
+    <tr><td><code>facts</code></td><td>ndarray or None</td><td>Optimised calibration factors</td></tr>
+    <tr><td><code>species_labels</code></td><td>list[str]</td><td>Species names</td></tr>
+    <tr><td><code>E_guess_list</code></td><td>list[ndarray]</td><td>Energy grids (snapped to RM)</td></tr>
+    <tr><td><code>es_result</code></td><td>CMAResult</td><td>Raw pycma result object</td></tr>
+  </tbody>
+</table>
+
+<h4><code>get(label) → (E_guess, spectrum_linear)</code></h4>
+<p>
+  Convenience accessor. Raises <code>KeyError</code> if the label is not found.
+</p>
+
+<pre><code>E, spec = result.get(<span class="st">'photon'</span>)
+plt.loglog(E, spec)</code></pre>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="api-dataprocessor">
+<h3><code>DataProcessor</code></h3>
+
+<h4><code>import_RM() → (Spectrum_tot, FLUKA_tot, FLUKA_fact, E)</code></h4>
+<p>
+  Reads all <code>*_FLUKA.txt</code> / <code>*_Energy.txt</code> file
+  triplets from <code>Config.folder_path</code>. Applies
+  <code>Config.factor</code>, peak-normalises each row, and returns arrays
+  sorted by ascending energy.
+</p>
+
+<h4><code>read_image(norm_flag=True, plot_flag=False) → ndarray</code></h4>
+<p>
+  Opens <code>Config.image_path</code>, extracts integrated pixel intensity
+  per ROI. If <code>norm_flag</code> is True, each value is divided by the
+  ROI pixel count.
+</p>
+
+<h4><code>find_nearest(array, values) → ndarray</code></h4>
+<p>
+  Injective nearest-neighbour mapping: returns one unique index per value.
+  Raises <code>ValueError</code> if any value falls outside the array range.
+</p>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="api-erroranalysis">
+<h3><code>ErrorAnalysis</code></h3>
+
+<h4>Constructor</h4>
+<pre><code>ErrorAnalysis(E_error, error_files, ddv, window_size=<span class="nu">200</span>)</code></pre>
+<p>
+  Loads four error-level files and builds a 2-D error matrix over
+  (normalised signal, energy), smoothed with a moving-average kernel
+  of width <code>window_size</code>.
+</p>
+
+<h4><code>get_errors(x_vals, data_vals) → ndarray</code></h4>
+<p>
+  Bilinear interpolation on the error matrix. <code>data_vals</code> is
+  peak-normalised internally. Returns NaN where interpolation fails
+  (out-of-bounds).
+</p>
+
+<h4><code>plot_error_results(E_guess, signal, y_errors, std)</code></h4>
+<p>
+  Produces a publication-ready log–log plot with error bars combining
+  unfolding uncertainty, systematic error (<code>std</code>), and
+  Poisson counting noise.
+</p>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="api-plotter">
+<h3><code>Plotter</code></h3>
+
+<h4><code>plot_results(Exp_FLUKA, FLUKA_sim)</code></h4>
+<p>Overlays experimental and reconstructed detector signals (normalised).</p>
+
+<h4><code>plot_spectrum(E_guess, sim)</code></h4>
+<p>Log–log plot of the unfolded spectrum.</p>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="api-helpers">
+<h3>Helper Functions</h3>
+
+<table>
+  <thead><tr><th>Function</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>_smoothness_simple(spectrum, E_guess)</code></td><td>Second-difference curvature penalty</td></tr>
+    <tr><td><code>_smoothness_logistic(spectrum, ...)</code></td><td>Logistic-weighted first-difference penalty</td></tr>
+    <tr><td><code>_huber_loss(residuals, delta, weights)</code></td><td>Element-wise Huber loss</td></tr>
+    <tr><td><code>_softplus(x, k)</code></td><td>Smooth ReLU approximation</td></tr>
+    <tr><td><code>_facts_penalty(facts, k)</code></td><td>Quartic barrier for calibration factors</td></tr>
+    <tr><td><code>make_synthetic_exp(...)</code></td><td>Forward-model a known spectrum into synthetic detector data</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="tutorial-single">
+<h2>Tutorial: Single-Species Unfolding</h2>
+
+<p>
+  The simplest use case: unfold a photon spectrum from 17 scintillator channels.
+</p>
+
+<pre><code><span class="kw">from</span> CMA_optimizer <span class="kw">import</span> (
+    Config, DataProcessor, SpeciesConfig,
+    MultiSpeciesOptimizer, Plotter
+)
+
+<span class="cm"># 1. Load RM</span>
+_, FLUKA_tot, FLUKA_fact, E = DataProcessor.import_RM()
+
+<span class="cm"># 2. Read experimental data</span>
+Exp_FLUKA = DataProcessor.read_image(norm_flag=<span class="nb">True</span>)
+Exp_max = Exp_FLUKA.max()
+Exp_FLUKA /= Exp_max
+
+<span class="cm"># 3. Configure species</span>
+species = SpeciesConfig(
+    label=<span class="st">'photon'</span>,
+    E=E,
+    E_guess=Config.E_guess.copy(),
+    FLUKA_tot=FLUKA_tot,
+    FLUKA_fact=FLUKA_fact,
+    smooth_factor=<span class="nu">5e-6</span>,
+)
+
+<span class="cm"># 4. Run optimizer</span>
+opt = MultiSpeciesOptimizer(
+    species_list=[species],
+    Exp_FLUKA=Exp_FLUKA,
+    smoothing=<span class="nb">True</span>,
+)
+result = opt.run_CMA()
+
+<span class="cm"># 5. Plot</span>
+E_out, spec = result.get(<span class="st">'photon'</span>)
+Plotter.plot_spectrum(E_out, spec * Exp_max)</code></pre>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="tutorial-multi">
+<h2>Tutorial: Multi-Species (Photon + Electron)</h2>
+
+<pre><code><span class="cm"># After loading photon RM as above...</span>
+
+<span class="cm"># Load electron RM by temporarily swapping folder_path</span>
+_backup = Config.folder_path
+Config.folder_path = Config.folder_path_e
+_, FLUKA_tot_e, FLUKA_fact_e, E_e = DataProcessor.import_RM()
+Config.folder_path = _backup
+
+species_e = SpeciesConfig(
+    label=<span class="st">'electron'</span>,
+    E=E_e,
+    E_guess=Config.E_guess_e,
+    FLUKA_tot=FLUKA_tot_e,
+    FLUKA_fact=FLUKA_fact_e,
+    smooth_factor=<span class="nu">1.3e-9</span>,
+    smooth_transition_start=<span class="nu">0.30</span>,
+    smooth_min_weight=<span class="nu">0.10</span>,
+    smooth_steepness=<span class="nu">10</span>,
+)
+
+opt = MultiSpeciesOptimizer(
+    species_list=[species_p, species_e],
+    Exp_FLUKA=Exp_FLUKA,
+    smoothing=<span class="nb">True</span>,
+)
+result = opt.run_CMA()
+
+<span class="cm"># Access each species independently</span>
+E_p, spec_p = result.get(<span class="st">'photon'</span>)
+E_e, spec_e = result.get(<span class="st">'electron'</span>)</code></pre>
+
+<div class="callout note">
+  <div class="callout-title">Electron Smoothing</div>
+  <p>
+    The electron species typically requires a much lower
+    <code>smooth_factor</code> and an earlier logistic transition onset
+    because electron RMs tend to have sharper energy dependence and
+    fewer spectral bins.
+  </p>
+</div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="tutorial-synthetic">
+<h2>Tutorial: Synthetic Closure Test</h2>
+<p>
+  The <code>main()</code> function demonstrates a closure test: a known
+  analytical spectrum is forward-modelled through the RM to produce synthetic
+  data, then recovered by the optimizer. This validates the pipeline
+  end-to-end.
+</p>
+
+<pre><code><span class="kw">from</span> CMA_optimizer <span class="kw">import</span> make_synthetic_exp
+
+<span class="cm"># Define a known exponential photon spectrum</span>
+E_temp = <span class="nu">10</span>   <span class="cm"># MeV temperature</span>
+known = (<span class="nu">1</span> / Config.E_guess) * np.exp(-Config.E_guess / E_temp)
+
+<span class="cm"># Generate synthetic detector signal</span>
+Exp_FLUKA = make_synthetic_exp(FLUKA_tot, FLUKA_fact, E, Config.E_guess, known)
+Exp_max = Exp_FLUKA.max()
+Exp_FLUKA /= Exp_max
+
+<span class="cm"># Run optimizer and compare result.spectra_linear[0] against `known`</span></code></pre>
+
+<div class="callout tip">
+  <div class="callout-title">Diagnostic Value</div>
+  <p>
+    If the closure test fails to recover the input spectrum, possible causes
+    include: insufficient <code>N_guess</code>, incorrect
+    <code>smooth_factor</code>, or RM energy coverage that does not span the
+    input spectrum. Always run a closure test before analysing real data.
+  </p>
+</div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="tutorial-calibration">
+<h2>Tutorial: Calibration Factor Tuning</h2>
+
+<pre><code>opt = MultiSpeciesOptimizer(
+    species_list=[species_p],
+    Exp_FLUKA=Exp_FLUKA,
+    tune_calibration=<span class="nb">True</span>,
+    facts_penalty_weight=<span class="nu">1e-2</span>,
+    smoothing=<span class="nb">True</span>,
+)
+result = opt.run_CMA()
+
+<span class="cm"># Inspect optimised calibration factors</span>
+<span class="kw">print</span>(result.facts)  <span class="cm"># should be close to 1.0</span></code></pre>
+
+<div class="callout danger">
+  <div class="callout-title">Degeneracy Risk</div>
+  <p>
+    With calibration tuning enabled, the optimizer has
+    \(N_\text{guess} + N_\text{FLUKA}\) free parameters but only
+    \(N_\text{FLUKA}\) constraints. The problem is under-determined
+    unless the smoothness penalty and facts penalty jointly constrain
+    the solution. Monitor <code>result.facts</code> — if values drift
+    beyond ±10%, increase <code>facts_penalty_weight</code>.
+  </p>
+</div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="hyperparameters">
+<h2>Hyperparameter Guide</h2>
+
+<table>
+  <thead><tr><th>Parameter</th><th>Typical Range</th><th>Effect of Increase</th></tr></thead>
+  <tbody>
+    <tr><td><code>N_guess</code></td><td>10–100</td><td>Higher spectral resolution; more ill-posed</td></tr>
+    <tr><td><code>smooth_factor</code></td><td>1e-7 – 1e-3</td><td>Smoother spectrum; risk of over-regularisation</td></tr>
+    <tr><td><code>huber_delta</code></td><td>1e-3 – 1e-1</td><td>Less outlier robustness; closer to L2 loss</td></tr>
+    <tr><td><code>facts_penalty_weight</code></td><td>1e-3 – 1</td><td>Facts pinned closer to 1; less flexibility</td></tr>
+    <tr><td><code>smooth_transition_start</code></td><td>0.3 – 0.95</td><td>Later onset → more bins fully regularised</td></tr>
+    <tr><td><code>sigma0</code></td><td>1 – 5</td><td>Broader initial search; slower convergence</td></tr>
+    <tr><td><code>popsize</code></td><td>17 – 100</td><td>Better exploration; more evaluations per generation</td></tr>
+  </tbody>
+</table>
+
+<div class="callout note">
+  <div class="callout-title">Tuning Strategy</div>
+  <p>
+    Start with the closure test. Adjust <code>smooth_factor</code> until the
+    recovered spectrum matches the input within the expected error bars. Then
+    apply to real data. If the residual plot shows systematic structure
+    (oscillations in the detector-signal comparison), the smoothness is too
+    high; if the spectrum shows high-frequency noise, it is too low.
+  </p>
+</div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="diagnostics">
+<h2>Diagnostics &amp; Debugging</h2>
+
+<h3>Convergence Checks</h3>
+<ul>
+  <li>Inspect <code>result.es_result.stop()</code> to see which CMA
+    termination criterion fired.</li>
+  <li>Use <code>cma.plot()</code> on the logger for convergence curves
+    (objective value, σ, axis ratios).</li>
+  <li>If <code>maxiter</code> is reached without convergence, increase it
+    or widen <code>sigma0</code>.</li>
+</ul>
+
+<h3>Residual Analysis</h3>
+<pre><code>FLUKA_sim = opt.calc_FLUKA(result)
+residual = (Exp_FLUKA.flatten() - FLUKA_sim / FLUKA_sim.max())
+plt.bar(range(Config.N_FLUKA), residual)
+plt.ylabel(<span class="st">'Relative residual'</span>)
+plt.xlabel(<span class="st">'Detector channel'</span>)
+plt.show()</code></pre>
+
+<h3>Common Failure Modes</h3>
+
+<details>
+  <summary>Spectrum hits the upper/lower bound</summary>
+  <div class="details-content">
+    <p>
+      If many bins saturate at <code>upper_bound</code> or
+      <code>lower_bound</code>, widen the bounds. This typically happens when
+      the normalisation of <code>Exp_FLUKA</code> is inconsistent with the RM
+      scale, or when the RM does not cover the energy range of the true spectrum.
+    </p>
+  </div>
+</details>
+
+<details>
+  <summary>Optimizer converges to wrong spectrum</summary>
+  <div class="details-content">
+    <p>
+      Run the closure test first. If it passes but real data fails, the issue
+      is likely in the RM (missing physics, incorrect calibration) or the
+      experimental data (background subtraction, saturation). Try enabling
+      <code>tune_calibration</code> to absorb per-channel systematics.
+    </p>
+  </div>
+</details>
+
+<details>
+  <summary>CMA-ES stalls (σ collapses prematurely)</summary>
+  <div class="details-content">
+    <p>
+      Increase <code>popsize</code> (e.g. 50–100) and/or set
+      <code>'tolfun': 1e-12</code> in <code>cma_options</code>. Premature
+      σ-collapse often indicates a flat or degenerate landscape — check
+      that the RM has sufficient rank for the chosen <code>N_guess</code>.
+    </p>
+  </div>
+</details>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="performance">
+<h2>Performance &amp; Scaling</h2>
+
+<table>
+  <thead><tr><th>Configuration</th><th>N_vars</th><th>Typical Runtime</th></tr></thead>
+  <tbody>
+    <tr><td>1 species, 25 bins, no calib</td><td>25</td><td>1–5 min</td></tr>
+    <tr><td>2 species (25+5), no calib</td><td>30</td><td>3–10 min</td></tr>
+    <tr><td>2 species + calibration</td><td>47</td><td>10–30 min</td></tr>
+    <tr><td>1 species, 100 bins</td><td>100</td><td>30–90 min</td></tr>
+  </tbody>
+</table>
+
+<p>
+  Runtimes are approximate for a single-core desktop (3 GHz). CMA-ES is
+  inherently sequential in its covariance update, but the objective function
+  evaluations within each generation are independent and could be parallelised
+  via <code>cma.CMAEvolutionStrategy</code>'s <code>eval_parallel</code>
+  callback. The forward model itself (<code>_calc_FLUKA_species</code>) is
+  fully vectorised with NumPy.
+</p>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="extending">
+<h2>Extending the Code</h2>
+
+<h3>Adding a Third Species</h3>
+<p>
+  Create a third <code>SpeciesConfig</code> with its own RM and energy grid,
+  then pass all three to <code>MultiSpeciesOptimizer</code>. The code supports
+  up to 3 species natively.
+</p>
+
+<h3>Custom Regularisation</h3>
+<p>
+  To add a new regularisation term (e.g. entropy, L1 sparsity), define a
+  function with signature <code>f(spectrum: ndarray) → float</code> and add
+  it to the appropriate <code>_objective_*</code> method. Create a new
+  objective variant if needed and register it in
+  <code>_build_objective_fn()</code>.
+</p>
+
+<h3>Alternative Fidelity Metrics</h3>
+<p>
+  The Huber loss can be replaced by any robust estimator (Cauchy, Tukey
+  biweight) by modifying <code>_huber_loss()</code>. The relative-residual
+  normalisation \((d - \hat{d})^2 / d^2\) can also be changed to absolute
+  residuals or Poisson log-likelihood depending on the noise model.
+</p>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="known-issues">
+<h2>Known Issues</h2>
+<ul>
+  <li>
+    <strong>Config as mutable class attributes:</strong> swapping
+    <code>Config.folder_path</code> to load a second RM is a side-effect
+    pattern. A future refactor should pass the folder path as an argument
+    to <code>import_RM()</code>.
+  </li>
+  <li>
+    <strong>ErrorAnalysis double-smoothing:</strong> the error matrix is
+    smoothed once inside <code>_create_error_matrix()</code> and again in
+    <code>__init__</code>. This is inherited from the original code and
+    produces slightly more diffuse error estimates than a single pass.
+  </li>
+  <li>
+    <strong>Injective nearest-neighbour in <code>find_nearest</code>:</strong>
+    if two <code>E_guess</code> values map to the same RM index, the second
+    is bumped to the next available index. This can shift bins at the edges
+    of the energy grid. Prefer well-separated <code>E_guess</code> values.
+  </li>
+  <li>
+    <strong>No automatic normalisation consistency check</strong> between
+    <code>Exp_FLUKA</code> and the RM scale. The user must ensure consistent
+    units.
+  </li>
+</ul>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────── -->
+<section id="license">
+<h2>License</h2>
+<p>
+  This software is released under the
+  <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/">PolyForm Noncommercial License 1.0.0</a>.
+  You may use, modify, and distribute the code for any non-commercial purpose.
+  Commercial use requires a separate license from the author.
+</p>
+<p style="color: var(--text-muted); font-size: 13px; margin-top: 24px;">
+  © 2025 G. Fauvel — CMA Spectral Unfolder
+</p>
+</section>
+
+</main>
+
+<!-- ═══════════ SCRIPTS ═══════════ -->
+<script>
+// KaTeX auto-render
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "\\(", right: "\\)", display: false},
+    ],
+    throwOnError: false,
+  });
+
+  // Active sidebar link tracking
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.sidebar a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const active = document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(section => observer.observe(section));
+
+  // Close mobile sidebar on link click
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelector('.sidebar').classList.remove('open');
+    });
+  });
+});
+</script>
+</body>
+</html>
